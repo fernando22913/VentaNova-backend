@@ -419,7 +419,7 @@ if (existingAdmin) {
   const passwordHash = await hasher.hash(adminPassword);
   await db.insert(users).values({
     email: adminEmail,
-    name: 'ByteMarket Admin',
+    name: 'VentaNova Admin',
     passwordHash,
     role: 'ADMIN',
   });

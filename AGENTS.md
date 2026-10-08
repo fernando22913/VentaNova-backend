@@ -1,6 +1,6 @@
 # AGENTS.md
 
-ByteMarket **backend** — Express/TypeScript + PostgreSQL (Drizzle ORM). This repository is
+VentaNova **backend** — Express/TypeScript + PostgreSQL (Drizzle ORM). This repository is
 the API only; the Angular frontend is a separate repo/service. `README.md` is the prose
 source of truth; this file only captures things easy to get wrong.
 

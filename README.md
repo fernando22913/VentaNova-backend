@@ -1,6 +1,6 @@
-# ByteMarket — Backend
+# VentaNova — Backend
 
-Express 5 + TypeScript API for the ByteMarket digital storefront, backed by PostgreSQL
+Express 5 + TypeScript API for the VentaNova digital storefront, backed by PostgreSQL
 via Drizzle ORM. Hexagonal architecture: `domain/` imports nothing, `application/` imports
 only `domain/`, `infrastructure/` implements `domain` ports, and `src/container.ts` is the
 single composition root.

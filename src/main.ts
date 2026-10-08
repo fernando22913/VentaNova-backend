@@ -7,7 +7,7 @@ const container = buildContainer();
 const app = createApp(container);
 
 const server = app.listen(env.PORT, () => {
-  logger.info({ port: env.PORT, env: env.NODE_ENV }, 'ByteMarket API listening');
+  logger.info({ port: env.PORT, env: env.NODE_ENV }, 'VentaNova API listening');
 });
 
 function shutdown(signal: string): void {
