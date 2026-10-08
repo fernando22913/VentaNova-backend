@@ -1,0 +1,58 @@
+{
+  "name": "@bytemarket/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f db",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:api": "vitest run tests/api",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/infrastructure/persistence/run-migrations.ts",
+    "db:migrate:prod": "node dist/infrastructure/persistence/run-migrations.js",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/infrastructure/persistence/seed.ts",
+    "db:seed:prod": "node dist/infrastructure/persistence/seed.js",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.2.1",
+    "cors": "^2.8.6",
+    "drizzle-orm": "^0.45.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "postgres": "^3.4.9",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.6.4",
+    "@types/supertest": "^7.2.1",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "^10.12.0",
+    "prettier": "^3.9.9",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}
