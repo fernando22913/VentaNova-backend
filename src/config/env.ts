@@ -25,6 +25,8 @@ const envSchema = z
     // short-lived JWTs; refresh tokens are opaque and rotated on every use.
     ACCESS_TOKEN_EXPIRES_IN: z.string().default('1h'),
     REFRESH_TOKEN_EXPIRES_IN: z.string().default('7d'),
+    // Structured-log verbosity. Test runs force `silent` regardless of this.
+    LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   })
   .superRefine((value, ctx) => {
     // Never boot a production deployment with the example/placeholder secret:

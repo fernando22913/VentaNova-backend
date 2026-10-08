@@ -1,20 +1,21 @@
 import { buildContainer } from './container.js';
 import { env } from './config/env.js';
+import { logger } from './infrastructure/logging/logger.js';
 import { createApp } from './infrastructure/http/app.js';
 
 const container = buildContainer();
 const app = createApp(container);
 
 const server = app.listen(env.PORT, () => {
-  console.log(`[ByteMarket API] listening on http://localhost:${env.PORT} (${env.NODE_ENV})`);
+  logger.info({ port: env.PORT, env: env.NODE_ENV }, 'ByteMarket API listening');
 });
 
 function shutdown(signal: string): void {
-  console.log(`[ByteMarket API] ${signal} received, shutting down`);
+  logger.info({ signal }, 'Shutdown signal received');
   server.close(() => {
     void container
       .close()
-      .catch((error: unknown) => console.error('[ByteMarket API] error closing database', error))
+      .catch((error: unknown) => logger.error({ err: error }, 'Error closing database'))
       .finally(() => process.exit(0));
   });
 }

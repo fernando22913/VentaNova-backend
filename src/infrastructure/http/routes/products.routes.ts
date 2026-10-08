@@ -9,7 +9,7 @@ import { toPublicProduct, toPublicProductView } from '../dto.js';
 
 const PRODUCT_SORTS = ['newest', 'price_asc', 'price_desc', 'title'] as const;
 
-const productQuerySchema = z.object({
+export const productQuerySchema = z.object({
   search: z.string().trim().max(100).optional(),
   category: z.string().trim().max(60).optional(),
   platform: z.enum([...PRODUCT_PLATFORMS]).optional(),
@@ -19,6 +19,8 @@ const productQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(60).default(12),
 });
+
+export type ProductQuery = z.infer<typeof productQuerySchema>;
 
 export function createProductsRouter(container: AppContainer): Router {
   const router = Router();

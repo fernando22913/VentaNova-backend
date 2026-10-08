@@ -1,6 +1,7 @@
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 
 import { env } from '../../config/env.js';
+import { logger } from '../logging/logger.js';
 import { createDb } from './db.js';
 
 /**
@@ -12,7 +13,7 @@ export async function runMigrations(databaseUrl = env.DATABASE_URL): Promise<voi
   const { db, client } = createDb(databaseUrl);
   await migrate(db, { migrationsFolder: './drizzle' });
   await client.end();
-  console.log('[ByteMarket] migrations applied');
+  logger.info('Migrations applied');
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

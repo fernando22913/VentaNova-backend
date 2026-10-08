@@ -8,7 +8,7 @@ import { ordersCreateRateLimiter, paymentRateLimiter } from '../middleware/rate-
 import { toOrderDto, toPayResult } from '../dto.js';
 import { isLuhnValid } from '../../payment/simulated-payment.gateway.js';
 
-const createOrderSchema = z.object({
+export const createOrderSchema = z.object({
   items: z
     .array(
       z.object({
@@ -20,7 +20,7 @@ const createOrderSchema = z.object({
     .max(50, 'Order cannot contain more than 50 items'),
 });
 
-const cardSchema = z.object({
+export const cardSchema = z.object({
   cardName: z.string().trim().min(1).max(80),
   cardNumber: z
     .string()
@@ -37,6 +37,9 @@ const cardSchema = z.object({
     .trim()
     .regex(/^\d{3,4}$/, 'Invalid CVC'),
 });
+
+export type CreateOrderBody = z.infer<typeof createOrderSchema>;
+export type CardInput = z.infer<typeof cardSchema>;
 
 export function createOrdersRouter(container: AppContainer): Router {
   const router = Router();

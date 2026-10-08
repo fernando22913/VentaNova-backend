@@ -9,6 +9,19 @@ export default defineConfig({
     fileParallelism: false,
     testTimeout: 30000,
     hookTimeout: 30000,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      include: ['src/**/*.ts'],
+      // Entrypoints, one-shot CLI scripts and type-only declarations are not
+      // reachable from the test suites, so counting them distorts the report.
+      exclude: [
+        'src/main.ts',
+        'src/infrastructure/persistence/run-migrations.ts',
+        'src/infrastructure/persistence/seed.ts',
+        'src/**/*.d.ts',
+      ],
+    },
     env: {
       NODE_ENV: 'test',
       PORT: '3000',

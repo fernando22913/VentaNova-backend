@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 
 import { DomainError } from '../../../domain/errors/index.js';
+import { logger } from '../../logging/logger.js';
 import { RequestValidationError } from '../validation.js';
 
 interface BoundaryError {
@@ -67,7 +68,7 @@ const PG_CONSTRAINT_ERRORS: Record<string, { status: number; code: string; messa
  */
 export function errorHandler(
   error: unknown,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction,
 ): void {
@@ -102,7 +103,7 @@ export function errorHandler(
     return;
   }
 
-  console.error('[ByteMarket] unhandled error:', error);
+  logger.error({ err: error, requestId: req.id }, 'Unhandled error');
   res.status(500).json({
     error: { code: 'INTERNAL_ERROR', message: 'Unexpected server error' },
   });

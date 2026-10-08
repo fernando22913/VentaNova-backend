@@ -5,6 +5,7 @@ import type { CategoryCreateInput } from '../../domain/model/category.js';
 import type { ProductCreateInput } from '../../domain/model/product.js';
 import type { ProductType, ProductPlatform, ProductStatus } from '../../domain/model/enums.js';
 import { ArgonHasher } from '../auth/argon.hasher.js';
+import { logger } from '../logging/logger.js';
 import { createDb } from './db.js';
 import { runMigrations } from './run-migrations.js';
 import { categories, products, users } from './schema.js';
@@ -413,7 +414,7 @@ for (const product of seedProducts) {
 // so redeploying cannot reset (or silently downgrade) a rotated password.
 const [existingAdmin] = await db.select().from(users).where(eq(users.email, adminEmail));
 if (existingAdmin) {
-  console.log(`[seed] admin already exists → ${adminEmail} (password left unchanged)`);
+  logger.info({ adminEmail }, 'Admin already exists (password left unchanged)');
 } else {
   const passwordHash = await hasher.hash(adminPassword);
   await db.insert(users).values({
@@ -422,9 +423,9 @@ if (existingAdmin) {
     passwordHash,
     role: 'ADMIN',
   });
-  console.log(`[seed] admin created → ${adminEmail}`);
+  logger.info({ adminEmail }, 'Admin created');
 }
 
-console.log(`[seed] done. Categories: ${seedCategories.length}, Products: ${seedProducts.length}`);
+logger.info({ categories: seedCategories.length, products: seedProducts.length }, 'Seed complete');
 
 await client.end();

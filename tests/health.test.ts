@@ -25,3 +25,21 @@ describe('health endpoint', () => {
     });
   });
 });
+
+describe('request correlation', () => {
+  it('reuses an inbound x-request-id and echoes it back', async () => {
+    const response = await request(createApp(container))
+      .get('/api/v1/health')
+      .set('x-request-id', 'inbound-request-id');
+
+    expect(response.headers['x-request-id']).toBe('inbound-request-id');
+  });
+
+  it('generates a request id when none is supplied', async () => {
+    const response = await request(createApp(container)).get('/api/v1/health');
+
+    expect(response.headers['x-request-id']).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    );
+  });
+});

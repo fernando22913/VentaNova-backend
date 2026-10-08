@@ -1,6 +1,9 @@
+import { randomUUID } from 'node:crypto';
+
 import type { Request, Response } from 'express';
 
 import { env } from '../../config/env.js';
+import { logger } from '../logging/logger.js';
 import type { AppContainer } from '../../container.js';
 import { healthRouter } from './routes/health.routes.js';
 import { createAuthRouter } from './routes/auth.routes.js';
@@ -12,8 +15,10 @@ import { createAdminRouter } from './routes/admin.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { authRateLimiter, catalogRateLimiter } from './middleware/rate-limit.js';
 import express, { type Express } from 'express';
+import compression from 'compression';
 import cors from 'cors';
 import helmet from 'helmet';
+import { pinoHttp } from 'pino-http';
 
 const allowedOrigins = env.CORS_ORIGIN.split(',').map((origin) => origin.trim());
 
@@ -29,6 +34,20 @@ export function createApp(container: AppContainer): Express {
   app.disable('x-powered-by');
   app.use(helmet());
   app.use(cors({ origin: allowedOrigins }));
+  app.use(compression());
+  // Correlate every request: reuse an inbound `x-request-id` when the proxy
+  // supplies one, otherwise generate a UUID, and echo it back to the client.
+  app.use(
+    pinoHttp({
+      logger,
+      genReqId: (req, res) => {
+        const header = req.headers['x-request-id'];
+        const id = (Array.isArray(header) ? header[0] : header) ?? randomUUID();
+        res.setHeader('x-request-id', id);
+        return id;
+      },
+    }),
+  );
   app.use(express.json({ limit: '100kb' }));
 
   app.use('/api/v1/health', healthRouter);

@@ -6,7 +6,7 @@ import { parseOrThrow } from '../validation.js';
 import { requireAuth } from '../middleware/require-auth.js';
 import { toAuthResponse, toUserDto } from '../dto.js';
 
-const registerSchema = z.object({
+export const registerSchema = z.object({
   email: z.email({ message: 'Must be a valid email address' }),
   name: z.string().trim().min(1, 'Name is required').max(80, 'Name is too long'),
   password: z
@@ -15,15 +15,19 @@ const registerSchema = z.object({
     .max(72, 'Password is too long'),
 });
 
-const loginSchema = z.object({
+export const loginSchema = z.object({
   email: z.email({ message: 'Must be a valid email address' }),
   password: z.string().min(1, 'Password is required').max(72),
 });
 
 /** Opaque refresh token presented by the client (raw value, never a JWT). */
-const refreshTokenSchema = z.object({
+export const refreshTokenSchema = z.object({
   refresh_token: z.string().trim().min(1, 'Refresh token is required').max(512),
 });
+
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
+export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>;
 
 export function createAuthRouter(container: AppContainer): Router {
   const router = Router();

@@ -9,7 +9,7 @@ source of truth; this file only captures things easy to get wrong.
 Single npm project at the repository root.
 
 - `npm run dev` (:3000) · `npm run build` · `npm start` (`node dist/main.js`)
-- `npm run lint` · `npm run typecheck` · `npm test`
+- `npm run lint` · `npm run typecheck` · `npm test` · `npm run test:coverage` (V8, needs Postgres)
 - Local DB: `npm run db:up` / `db:down` / `db:logs`, `npm run db:migrate`, `npm run db:seed`
 
 Backend suites: `test:unit` (in-memory, no DB), `test:integration` and `test:api`
@@ -61,11 +61,25 @@ overwrites an existing admin's password.
   `TEST_DATABASE_URL`; requires Postgres up. `tests/api/` are supertest contract tests and
   the source of truth for request/response shapes.
 - Unit tests run against in-memory fakes (`tests/unit/helpers/fakes.ts`), no DB/HTTP.
+- Coverage is V8 via `test:coverage`; `vitest.config.ts` excludes the entrypoint and the
+  one-shot CLI scripts (`main.ts`, `run-migrations.ts`, `seed.ts`) since no suite reaches them.
+
+## Logging & observability
+
+- Structured logging is Pino (`src/infrastructure/logging/logger.ts`): JSON in production,
+  `pino-pretty` in development, `silent` under `NODE_ENV=test`. Runtime code logs through the
+  `logger` — never `console.*`. Verbosity is `LOG_LEVEL`.
+- Every request is correlated by `pino-http`: an inbound `x-request-id` is reused, otherwise a
+  UUID is generated, echoed on the response and attached to logs/errors via `req.id`.
+  Authorization/cookie headers are redacted. `compression()` is enabled in `app.ts`.
 
 ## Conventions & gotchas
 
 - Prettier is repo-configured (singleQuote, printWidth 100, trailingComma all) but is **not**
   a CI gate.
+- Boundary Zod schemas live in the route modules and are exported alongside `z.infer` types.
+  Full-row Drizzle `select()`s are intentional where the domain mapper consumes every column;
+  `entitlement`/aggregate queries already project only the needed columns.
 - API is under `/api/v1`; errors use the envelope `{ error: { code, message } }`, validation
   failures are `422` with field `details`. Auth is a short-lived Bearer **access** JWT
   (`requireAuth`/`requireAdmin`) paired with an opaque, SHA-256-hashed, rotating **refresh**

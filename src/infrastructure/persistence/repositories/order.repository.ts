@@ -6,9 +6,11 @@ import type { OrderRepository } from '../../../domain/ports/order-repository.js'
 import type { Database } from '../db.js';
 import { orderItems, orders } from '../schema.js';
 
-/** Drizzle adapter for the OrderRepository port. Loads order + items with one
- * join; writes order + items atomically (the insert inside a transaction when
- * used through the UnitOfWork). */
+/** Drizzle adapter for the OrderRepository port. Loads orders and their items
+ * with two batched queries (items fetched via one `inArray`), avoiding N+1;
+ * writes order + items atomically inside a transaction when used through the
+ * UnitOfWork. Full-row selects are intentional: the domain mapper consumes
+ * every column of `orders` and `order_items`. */
 export class DrizzleOrderRepository implements OrderRepository {
   constructor(private readonly db: Database) {}
 

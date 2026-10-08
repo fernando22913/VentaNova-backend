@@ -10,7 +10,7 @@ import { toAdminOrderDto, toAdminProductDetail } from '../dto.js';
 
 const PRODUCT_SORTS = ['newest', 'price_asc', 'price_desc', 'title'] as const;
 
-const listQuerySchema = z.object({
+export const listQuerySchema = z.object({
   search: z.string().trim().max(100).optional(),
   categoryId: z.string().uuid().optional(),
   platform: z.enum([...PRODUCT_PLATFORMS]).optional(),
@@ -20,7 +20,7 @@ const listQuerySchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(60).default(20),
 });
 
-const baseProductSchema = z.object({
+export const baseProductSchema = z.object({
   slug: z
     .string()
     .trim()
@@ -44,9 +44,14 @@ const baseProductSchema = z.object({
   status: z.enum(['DRAFT', 'PUBLISHED']),
 });
 
-const updateProductSchema = baseProductSchema.omit({ status: true }).partial();
+export const updateProductSchema = baseProductSchema.omit({ status: true }).partial();
 
-const statusSchema = z.object({ status: z.enum([...PRODUCT_STATUSES]) });
+export const statusSchema = z.object({ status: z.enum([...PRODUCT_STATUSES]) });
+
+export type ListProductsQuery = z.infer<typeof listQuerySchema>;
+export type CreateProductBody = z.infer<typeof baseProductSchema>;
+export type UpdateProductBody = z.infer<typeof updateProductSchema>;
+export type ChangeStatusBody = z.infer<typeof statusSchema>;
 
 export function createAdminRouter(container: AppContainer): Router {
   const router = Router();
