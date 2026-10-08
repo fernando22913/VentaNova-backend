@@ -27,13 +27,18 @@ services:
     # NODE_ENV=production is set below; force dev deps so tsc/tsx are available
     # while building (they are not needed at runtime).
     buildCommand: npm ci --include=dev && npm run build
-    # Migrations + idempotent, password-preserving seed run before boot against
+    # Migrations + idempotent, password-preserving seed run at boot against
     # DATABASE_URL. The compiled runners need no tsx and use committed SQL in
     # ./drizzle. The seed fails fast if ADMIN_EMAIL / ADMIN_PASSWORD are not
     # configured, so a missing secret blocks the deploy instead of shipping a
     # default admin.
-    releaseCommand: npm run db:migrate:prod && npm run db:seed:prod
-    startCommand: npm start
+    #
+    # NOTE: `preDeployCommand` (the modern replacement for `releaseCommand`) is
+    # NOT available on the Free plan, so the migration/seed step is folded into
+    # startCommand. On a paid plan, move this to:
+    #   preDeployCommand: npm run db:migrate:prod && npm run db:seed:prod
+    #   startCommand: npm start
+    startCommand: npm run db:migrate:prod && npm run db:seed:prod && npm start
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV
