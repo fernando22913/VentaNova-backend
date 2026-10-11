@@ -19,6 +19,7 @@ export default defineConfig({
         'src/main.ts',
         'src/infrastructure/persistence/run-migrations.ts',
         'src/infrastructure/persistence/seed.ts',
+        'src/infrastructure/persistence/seed-demo-sales.ts',
         'src/**/*.d.ts',
       ],
     },

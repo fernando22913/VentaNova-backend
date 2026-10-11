@@ -26,6 +26,8 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/infrastructure/persistence/seed.ts",
     "db:seed:prod": "node dist/infrastructure/persistence/seed.js",
+    "db:seed:sales": "tsx src/infrastructure/persistence/seed-demo-sales.ts",
+    "db:seed:sales:prod": "node dist/infrastructure/persistence/seed-demo-sales.js",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
   },

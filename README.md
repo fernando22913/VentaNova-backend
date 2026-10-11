@@ -40,6 +40,14 @@ npm run db:seed     # requires ADMIN_EMAIL / ADMIN_PASSWORD in .env
 npm run dev
 ```
 
+Optional: populate the Tendencias view with demo paid orders — a demo customer
+with 38 `PAID` orders spread across the last 30 days. It clears only that
+customer's own orders, so it is safe to re-run:
+
+```bash
+npm run db:seed:sales
+```
+
 `.env` is loaded automatically only when `NODE_ENV=development` (via `process.loadEnvFile`).
 Run all backend scripts from this repository root.
 

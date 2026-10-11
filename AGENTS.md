@@ -51,6 +51,10 @@ journal stays the source of truth.
 created from `ADMIN_EMAIL` / `ADMIN_PASSWORD`. It fails fast if either is unset and never
 overwrites an existing admin's password.
 
+`db:seed:sales` is an **optional** demo seeder (not run by the deploy release). It creates a
+demo customer and 38 `PAID` orders spread over the last 30 days so `GET /trends` has data.
+Re-runnable: it clears only that demo customer's orders/entitlements.
+
 ## Tests
 
 - Vitest config sets `NODE_ENV=test`, which **disables rate limiting**; the rate-limit test
