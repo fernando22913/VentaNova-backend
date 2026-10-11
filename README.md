@@ -56,13 +56,13 @@ The runner is **vitest**. Suites have dedicated scripts:
 
 ```bash
 npm run test:unit         # in-memory fakes, no DB/HTTP
-npm run test:integration  # needs PostgreSQL (creates bytemarket_test)
+npm run test:integration  # needs PostgreSQL (creates ventanova_test)
 npm run test:api          # supertest contract tests, needs PostgreSQL
 npm test                  # all three (also needs PostgreSQL)
 ```
 
 A single file: `npx vitest run tests/unit/config/duration.test.ts`. Integration tests share
-one `bytemarket_test` database and auto-create/migrate it from `TEST_DATABASE_URL`.
+one `ventanova_test` database and auto-create/migrate it from `TEST_DATABASE_URL`.
 
 Checks: `npm run lint` (ESLint), `npm run typecheck` (`tsc --noEmit`).
 

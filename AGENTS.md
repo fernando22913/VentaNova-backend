@@ -56,7 +56,7 @@ overwrites an existing admin's password.
 - Vitest config sets `NODE_ENV=test`, which **disables rate limiting**; the rate-limit test
   builds enabled limiters from the exported option constants (`AUTH_RATE_LIMIT`,
   `ORDERS_CREATE_RATE_LIMIT`, `CATALOG_RATE_LIMIT`, …).
-- Integration tests share one `bytemarket_test` DB, so `fileParallelism: false`. The helper
+- Integration tests share one `ventanova_test` DB, so `fileParallelism: false`. The helper
   (`tests/integration/helpers/test-db.ts`) auto-creates and migrates it from
   `TEST_DATABASE_URL`; requires Postgres up. `tests/api/` are supertest contract tests and
   the source of truth for request/response shapes.

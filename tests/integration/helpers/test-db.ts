@@ -6,14 +6,14 @@ import * as schema from '../../../src/infrastructure/persistence/schema.js';
 import type { Database } from '../../../src/infrastructure/persistence/db.js';
 
 /**
- * Shared helper for integration tests. Ensures the dedicated `bytemarket_test`
+ * Shared helper for integration tests. Ensures the dedicated `ventanova_test`
  * database exists, applies the committed migrations once per run, and hands
  * out a clean (truncated) database per test.
  */
 
 export const TEST_DATABASE_URL =
   process.env.TEST_DATABASE_URL ??
-  'postgresql://bytemarket:bytemarket_dev_password@localhost:5432/bytemarket_test';
+  'postgresql://ventanova:ventanova_dev_password@localhost:5432/ventanova_test';
 
 const testDatabaseName = getDatabaseName(TEST_DATABASE_URL);
 const adminUrl = TEST_DATABASE_URL.replace(/\/[^/]*$/, '/postgres');

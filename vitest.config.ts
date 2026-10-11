@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['tests/**/*.test.ts'],
-    // Integration tests share one `bytemarket_test` database, so files must
+    // Integration tests share one `ventanova_test` database, so files must
     // not truncate each other's fixtures while running in parallel.
     fileParallelism: false,
     testTimeout: 30000,
@@ -26,7 +26,7 @@ export default defineConfig({
       NODE_ENV: 'test',
       PORT: '3000',
       DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
-      TEST_DATABASE_URL: 'postgresql://bytemarket:bytemarket_dev_password@localhost:5432/bytemarket_test',
+      TEST_DATABASE_URL: 'postgresql://ventanova:ventanova_dev_password@localhost:5432/ventanova_test',
       CORS_ORIGIN: 'http://localhost:4200',
       JWT_SECRET: 'test_secret_that_is_long_enough',
     },
