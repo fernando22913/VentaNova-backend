@@ -1,178 +1,114 @@
 # VentaNova — Backend
 
-Express 5 + TypeScript API for the VentaNova digital storefront, backed by PostgreSQL
-via Drizzle ORM. Hexagonal architecture: `domain/` imports nothing, `application/` imports
-only `domain/`, `infrastructure/` implements `domain` ports, and `src/container.ts` is the
-single composition root.
+API REST para la tienda digital VentaNova. Stack: **Express 5 + TypeScript + PostgreSQL
+(Drizzle ORM)**. Autenticación con **JWT de acceso** de vida corta + **refresh token** opaco y
+rotatorio. Arquitectura hexagonal: `domain/` → `application/` → `infrastructure/`, con
+`src/container.ts` como único composition root.
 
-## Requirements
+## Requisitos
 
-- Node.js 24 LTS (`engines: >=24`)
-- PostgreSQL 17 (local via Docker or a remote URL)
+- Node.js 24+
+- PostgreSQL 17 (local con Docker, o una URL remota)
 
-## Install dependencies
+## Levantar todo (rápido)
 
 ```bash
 npm ci
+cp .env.example .env      # edita ADMIN_EMAIL / ADMIN_PASSWORD y JWT_SECRET
+
+npm run db:up             # levanta PostgreSQL (docker compose)
+npm run db:migrate        # aplica las migraciones de ./drizzle
+npm run db:seed           # 4 categorías, 23 productos y el admin inicial
+npm run dev               # API en http://localhost:3000
 ```
 
-## Local PostgreSQL
+Health check: `GET http://localhost:3000/api/v1/health`.
 
-A compose file is included for local development. Copy the env template first, then start
-the database:
-
-```bash
-cp .env.example .env
-npm run db:up      # docker compose up -d
-```
-
-The compose variables (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`)
-are read from `.env`; the app's `DATABASE_URL` must point at the same instance. `npm run
-db:down` and `npm run db:logs` manage the container.
-
-## Run locally
-
-Apply migrations and seed, then start the dev server (`tsx watch`, listens on `PORT`):
-
-```bash
-npm run db:migrate
-npm run db:seed     # requires ADMIN_EMAIL / ADMIN_PASSWORD in .env
-npm run dev
-```
-
-Optional: populate the Tendencias view with demo paid orders — a demo customer
-with 38 `PAID` orders spread across the last 30 days. It clears only that
-customer's own orders, so it is safe to re-run:
+Opcional — datos de demo para la vista Tendencias (un cliente con 38 pedidos `PAID`):
 
 ```bash
 npm run db:seed:sales
 ```
 
-`.env` is loaded automatically only when `NODE_ENV=development` (via `process.loadEnvFile`).
-Run all backend scripts from this repository root.
+### Credenciales del admin
 
-## Build
+Se crean a partir de `ADMIN_EMAIL` / `ADMIN_PASSWORD` del `.env` en el primer `db:seed`. El
+seed es **idempotente y no sobreescribe** una contraseña existente. Para cambiarla: borra el
+admin (`DELETE FROM users WHERE role='ADMIN';`) y vuelve a correr `npm run db:seed`.
 
-```bash
-npm run build      # tsc -> dist/
-npm start          # node dist/main.js (production)
-```
+## Scripts útiles
+
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` | Servidor de desarrollo (:3000, `tsx watch`) |
+| `npm run build` / `npm start` | Compila a `dist/` / arranca producción |
+| `npm run lint` / `npm run typecheck` | ESLint / `tsc --noEmit` |
+| `npm test` | Todos los tests (necesita PostgreSQL) |
+| `npm run test:unit` | Solo unitarios (sin base de datos) |
+| `npm run db:up` / `db:down` / `db:logs` | Gestión del contenedor PostgreSQL |
+| `npm run db:migrate` / `db:seed` / `db:seed:sales` | Migrar / sembrar / datos demo |
 
 ## Tests
 
-The runner is **vitest**. Suites have dedicated scripts:
+Runner **vitest**. `test:unit` corre con fakes en memoria (sin DB/HTTP); `test:integration`
+y `test:api` (supertest) necesitan PostgreSQL (crean y migran `ventanova_test`):
 
 ```bash
-npm run test:unit         # in-memory fakes, no DB/HTTP
-npm run test:integration  # needs PostgreSQL (creates ventanova_test)
-npm run test:api          # supertest contract tests, needs PostgreSQL
-npm test                  # all three (also needs PostgreSQL)
+npm run test:unit          # sin base de datos
+npm run test:integration   # requiere PostgreSQL
+npm run test:api           # requiere PostgreSQL
+npm test                   # los tres
 ```
 
-A single file: `npx vitest run tests/unit/config/duration.test.ts`. Integration tests share
-one `ventanova_test` database and auto-create/migrate it from `TEST_DATABASE_URL`.
+Un solo archivo: `npx vitest run tests/unit/config/duration.test.ts`.
 
-Checks: `npm run lint` (ESLint), `npm run typecheck` (`tsc --noEmit`).
+## Roles y permisos
 
-## Environment variables
-
-| Variable | Required | Default | Purpose |
-|---|---|---|---|
-| `NODE_ENV` | no | `development` | `production` enables trust-proxy and strict config checks |
-| `PORT` | no | `3000` | HTTP port (Render injects this in production) |
-| `DATABASE_URL` | **yes** | — | PostgreSQL connection string |
-| `CORS_ORIGIN` | **yes** | — | Allowed browser origin(s), comma-separated |
-| `JWT_SECRET` | **yes** | — | Access-token signing secret, ≥16 chars |
-| `ADMIN_EMAIL` | seed only | — | Initial admin email |
-| `ADMIN_PASSWORD` | seed only | — | Initial admin password, ≥8 chars |
-| `ACCESS_TOKEN_EXPIRES_IN` | no | `1h` | Access-token lifetime (`s`/`m`/`h`/`d`) |
-| `REFRESH_TOKEN_EXPIRES_IN` | no | `7d` | Refresh-token lifetime (`s`/`m`/`h`/`d`) |
-| `TEST_DATABASE_URL` | tests only | local fallback | Database used by integration tests |
-
-A malformed or missing required variable makes the process exit at boot. In production a
-placeholder `JWT_SECRET` is rejected.
-
-## Public endpoints
-
-### `GET /api/v1/trends`
-
-Aggregated sales statistics derived **only** from `PAID` orders. Public and unauthenticated;
-returns a coarse report — no customer, order, or item-level detail:
-
-```json
-{
-  "totals": {
-    "revenueCents": 44980,
-    "paidOrders": 12,
-    "unitsSold": 31,
-    "averageOrderCents": 3748
-  },
-  "sales": [
-    { "date": "2026-09-09", "revenueCents": 2999, "units": 2 }
-  ],
-  "bestSellers": [
-    { "slug": "neo-tokyo-racer", "title": "Neo Tokyo Racer", "unitsSold": 8, "revenueCents": 31992 }
-  ]
-}
-```
-
-- `sales` is a contiguous 30-day series (UTC dates, oldest first); days with no sales are `0`.
-- `bestSellers` is the top 5 products by units sold.
-- With no paid orders the response is zeroed (`totals` all `0`, `sales` full of zeros,
-  `bestSellers` empty) — the frontend shows an "insufficient data" state.
-- Rate-limited 300/15 min per IP.
-
-### `POST /api/v1/contact`
-
-Public contact form submission. The message is **validated and persisted** to the
-`contact_messages` table — there is **no email delivery integration**, so nothing is emailed
-and the success response only confirms the message was received and stored.
-
-Body (`application/json`):
-
-| Field | Type | Rules |
+| Rol | Cómo se crea | Puede |
 |---|---|---|
-| `name` | string | trimmed, required, ≤ 80 chars |
-| `email` | string | required, valid email, ≤ 254 chars |
-| `subject` | string | trimmed, required, ≤ 120 chars |
-| `message` | string | trimmed, required, ≤ 2000 chars |
+| `CUSTOMER` | Registro (botón "Crear cuenta") | Comprar, ver sus pedidos y su biblioteca |
+| `WORKER` | El admin lo crea desde el panel | Responder contactos, ver pedidos, gestionar catálogo |
+| `ADMIN` | `db:seed` | Todo, incluida la gestión de cuentas |
 
-Responses:
+Las rutas protegidas usan `requireAuth` + `requireRole(...)`; el backend revalida el rol en
+cada request (los guards del frontend son solo UX).
 
-- **201** — persisted message: `{ id, name, subject, message, createdAt }`.
-- **400** — malformed JSON (`INVALID_JSON`).
-- **422** — validation failure with `error.details[]` field messages.
-- **429** — rate limited (10 / 15 min per IP).
+## Endpoints (resumen)
 
-The `contact_messages` table (database migration `drizzle/0002_freezing_viper.sql`) stores
-`id`, `name`, `email` (citext), `subject`, `message`, `created_at`. No new environment
-variables are required.
+- **Público:** `/health`, `/auth/*`, `/products`, `/categories`, `POST /contact`, `/trends`
+- **Cliente (Bearer):** `/orders`, `/library`
+- **Staff (ADMIN + WORKER):** `/admin/products`, `/admin/orders`, `/contacts` (bandeja) y
+  `POST /contacts/:id/reply`
+- **Solo ADMIN:** `/admin/users` (listar y crear cuentas)
 
-## Render deployment
+Los contactos se **persisten**; no hay envío de email. La respuesta de un contacto se guarda
+junto al mensaje y lo marca como `RESOLVED`.
 
-`render.yaml` (repo root) is a Blueprint that provisions the web service **and** a managed
-PostgreSQL database. This repository **is** the backend, so the service builds from the
-repository root. Key settings:
+## Variables de entorno
 
-- **Build command:** `npm ci --include=dev && npm run build` (dev deps are needed for `tsc`
-  even though `NODE_ENV=production`).
-- **Release command:** `npm run db:migrate:prod && npm run db:seed:prod` — compiled runners
-  apply the committed SQL in `./drizzle` and seed idempotently before boot.
-- **Start command:** `npm start` (`node dist/main.js`).
-- **Health check:** `/api/v1/health`.
+| Variable | Requerida | Por defecto | Uso |
+|---|---|---|---|
+| `NODE_ENV` | no | `development` | `production` activa trust-proxy y chequeos estrictos |
+| `PORT` | no | `3000` | Puerto HTTP (Render lo inyecta en producción) |
+| `DATABASE_URL` | **sí** | — | Cadena de conexión a PostgreSQL |
+| `CORS_ORIGIN` | **sí** | — | Origen(es) permitidos, separados por coma |
+| `JWT_SECRET` | **sí** | — | Secreto de firma de los access tokens (≥16) |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | solo seed | — | Credenciales del admin inicial |
+| `ACCESS_TOKEN_EXPIRES_IN` | no | `1h` | Vida del access token (`s`/`m`/`h`/`d`) |
+| `REFRESH_TOKEN_EXPIRES_IN` | no | `7d` | Vida del refresh token |
+| `TEST_DATABASE_URL` | solo tests | fallback local | Base de datos de los tests de integración |
 
-### How `DATABASE_URL` is provided by Render
+Una variable requerida ausente o mal formada hace que el proceso salga al arrancar. En
+producción se rechaza un `JWT_SECRET` de ejemplo.
 
-`render.yaml` declares `DATABASE_URL` with `fromDatabase: { name: ventanova-db, property:
-connectionString }`, so Render injects the managed PostgreSQL connection string at runtime.
-Nothing in the code hardcodes a host or `localhost`.
+## Deploy (Render)
 
-### Secrets to configure in the Render dashboard
+`render.yaml` es el Blueprint (web service + PostgreSQL gestionado).
 
-- `JWT_SECRET` — generated by Render (`generateValue: true`).
-- `ADMIN_EMAIL` / `ADMIN_PASSWORD` — entered as secrets (`sync: false`); the seed fails the
-  release if either is missing, so no default admin is ever shipped.
-- `CORS_ORIGIN` — set to the deployed frontend origin (e.g. `https://ventanova.netlify.app`).
+- **Build:** `npm ci --include=dev && npm run build`
+- **Release:** `npm run db:migrate:prod && npm run db:seed:prod`
+- **Start:** `npm start` · **Health:** `/api/v1/health`
 
-`PORT` is injected by Render automatically — do not set it manually. Never commit real
-secrets; only `.env.example` (placeholders) is versioned.
+`DATABASE_URL` la inyecta Render desde la base gestionada; `JWT_SECRET` se genera. Configura
+en el dashboard `ADMIN_EMAIL` / `ADMIN_PASSWORD` (secrets) y `CORS_ORIGIN` con el origen del
+frontend desplegado. **No** definas `PORT`: lo inyecta Render.
