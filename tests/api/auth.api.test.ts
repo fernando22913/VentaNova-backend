@@ -195,7 +195,7 @@ describe('Auth API (contract)', () => {
         .set('Authorization', 'Bearer not.a.jwt');
       const forged = jwt.sign({ sub: 'attacker', role: 'ADMIN' }, 'not-the-real-secret', {
         algorithm: 'HS256',
-        issuer: 'bytemarket',
+        issuer: 'ventanova',
         expiresIn: 3600,
       });
       const forgedResponse = await request(app)

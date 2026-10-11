@@ -2,11 +2,13 @@ import { randomUUID } from 'node:crypto';
 
 import type { Database } from '../../../src/infrastructure/persistence/db.js';
 import { DrizzleCategoryRepository } from '../../../src/infrastructure/persistence/repositories/category.repository.js';
+import { DrizzleContactRepository } from '../../../src/infrastructure/persistence/repositories/contact-message.repository.js';
 import { DrizzleEntitlementRepository } from '../../../src/infrastructure/persistence/repositories/entitlement.repository.js';
 import { DrizzleOrderRepository } from '../../../src/infrastructure/persistence/repositories/order.repository.js';
 import { DrizzleProductRepository } from '../../../src/infrastructure/persistence/repositories/product.repository.js';
 import { DrizzleRefreshTokenRepository } from '../../../src/infrastructure/persistence/repositories/refresh-token.repository.js';
 import { DrizzleUserRepository } from '../../../src/infrastructure/persistence/repositories/user.repository.js';
+import { DrizzleTrendsRepository } from '../../../src/infrastructure/persistence/repositories/trends.repository.js';
 
 import type { User } from '../../../src/domain/model/user.js';
 import type { Category } from '../../../src/domain/model/category.js';
@@ -21,6 +23,8 @@ export function repositories(db: Database) {
     orders: new DrizzleOrderRepository(db),
     entitlements: new DrizzleEntitlementRepository(db),
     refreshTokens: new DrizzleRefreshTokenRepository(db),
+    contacts: new DrizzleContactRepository(db),
+    trends: new DrizzleTrendsRepository(db),
   };
 }
 
@@ -28,7 +32,7 @@ export type Repos = ReturnType<typeof repositories>;
 
 export async function makeUser(repos: Repos, overrides: Partial<User> = {}): Promise<User> {
   return repos.users.create({
-    email: overrides.email ?? `user-${randomId()}@bytemarket.dev`,
+    email: overrides.email ?? `user-${randomId()}@ventanova.dev`,
     name: overrides.name ?? 'Test User',
     passwordHash: overrides.passwordHash ?? 'argon2-test-hash-not-real',
     role: overrides.role ?? 'CUSTOMER',

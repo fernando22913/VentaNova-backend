@@ -5,6 +5,8 @@ export type { User, UserCreateInput } from './user.js';
 export type { RefreshToken, RefreshTokenCreateInput } from './refresh-token.js';
 export type { Order, OrderItem, OrderCreateInput, OrderItemCreateInput } from './order.js';
 export type { Entitlement, EntitlementCreateInput } from './entitlement.js';
+export type { ContactMessage, ContactMessageCreateInput } from './contact-message.js';
+export type { TrendReport, TrendTotals, TrendPoint, BestSeller } from './trends.js';
 
 export type {
   ProductType,

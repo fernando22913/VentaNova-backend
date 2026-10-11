@@ -383,3 +383,40 @@ export class FakeUnitOfWork implements UnitOfWork {
     return work(this.repositories);
   }
 }
+
+// --- Contact + Trends fakes ---------------------------------------------------
+
+import type { ContactMessage, ContactMessageCreateInput } from '../../../src/domain/model/contact-message.js';
+import type { ContactRepository } from '../../../src/domain/ports/contact-repository.js';
+import type { TrendReport } from '../../../src/domain/model/trends.js';
+import type { TrendsRepository } from '../../../src/domain/ports/trends-repository.js';
+
+export class InMemoryContactRepository implements ContactRepository {
+  readonly rows: ContactMessage[] = [];
+  sequence = 0;
+
+  async create(input: ContactMessageCreateInput): Promise<ContactMessage> {
+    const message: ContactMessage = {
+      id: `m-${++this.sequence}`,
+      name: input.name,
+      email: input.email,
+      subject: input.subject,
+      message: input.message,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    };
+    this.rows.push(message);
+    return message;
+  }
+}
+
+export class FakeTrendsRepository implements TrendsRepository {
+  report: TrendReport = {
+    totals: { revenueCents: 0, paidOrders: 0, unitsSold: 0, averageOrderCents: 0 },
+    sales: [],
+    bestSellers: [],
+  };
+
+  getReport(): Promise<TrendReport> {
+    return Promise.resolve(this.report);
+  }
+}

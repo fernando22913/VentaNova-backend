@@ -165,6 +165,19 @@ export const refreshTokens = pgTable(
   ],
 );
 
+export const contactMessages = pgTable(
+  'contact_messages',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    email: citext('email').notNull(),
+    subject: text('subject').notNull(),
+    message: text('message').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, precision: 3 }).notNull().defaultNow(),
+  },
+  (table) => [index('contact_messages_created_at_idx').on(table.createdAt)],
+);
+
 export type CategoryRow = typeof categories.$inferSelect;
 export type UserRow = typeof users.$inferSelect;
 export type ProductRow = typeof products.$inferSelect;
@@ -172,3 +185,4 @@ export type OrderRow = typeof orders.$inferSelect;
 export type OrderItemRow = typeof orderItems.$inferSelect;
 export type EntitlementRow = typeof entitlements.$inferSelect;
 export type RefreshTokenRow = typeof refreshTokens.$inferSelect;
+export type ContactMessageRow = typeof contactMessages.$inferSelect;

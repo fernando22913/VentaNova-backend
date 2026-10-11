@@ -14,3 +14,5 @@ export type { TokenService, TokenClaims, TokenPayload } from './token-service.js
 export type { RefreshTokenRepository } from './refresh-token-repository.js';
 export type { RefreshTokenGenerator } from './refresh-token-generator.js';
 export type { UnitOfWork, TransactionRepositories } from './unit-of-work.js';
+export type { ContactRepository } from './contact-repository.js';
+export type { TrendsRepository } from './trends-repository.js';

@@ -75,7 +75,7 @@ describe('OrderRepository (Drizzle)', () => {
 
   it('lists all orders for admin (across users)', async () => {
     await seedOrder();
-    const secondUser = await makeUser(repos, { email: 'other@bytemarket.dev' });
+    const secondUser = await makeUser(repos, { email: 'other@ventanova.dev' });
     const category = await makeCategory(repos);
     const product = await makeProduct(repos, category.id, { priceCents: 100 });
     await repos.orders.create({

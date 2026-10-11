@@ -404,7 +404,7 @@ for (const product of seedProducts) {
     priceCents: product.priceCents,
     status: product.status,
     coverImageUrl: product.hasCover ? `https://picsum.photos/seed/${product.slug}/640/360` : null,
-    assetUrl: `https://cdn.bytemarket.dev/downloads/${product.slug}.zip`,
+    assetUrl: `https://cdn.ventanova.dev/downloads/${product.slug}.zip`,
   };
   await db.insert(products).values(input);
 }

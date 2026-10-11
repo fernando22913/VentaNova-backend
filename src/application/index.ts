@@ -41,3 +41,8 @@ export { ListProductsForAdmin } from './admin/list-products.js';
 export type { ListProductsForAdminDeps } from './admin/list-products.js';
 export { ListAllOrders } from './admin/list-all-orders.js';
 export type { ListAllOrdersDeps } from './admin/list-all-orders.js';
+
+export { SubmitContact } from './contact/submit-contact.js';
+export type { SubmitContactDeps } from './contact/submit-contact.js';
+export { GetTrends } from './trends/get-trends.js';
+export type { GetTrendsDeps } from './trends/get-trends.js';

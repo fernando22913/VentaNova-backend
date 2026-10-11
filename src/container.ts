@@ -18,16 +18,20 @@ import type { RefreshTokenRepository } from './domain/ports/refresh-token-reposi
 import type { RefreshTokenGenerator } from './domain/ports/refresh-token-generator.js';
 import type { UnitOfWork } from './domain/ports/unit-of-work.js';
 import type { TokenService } from './domain/ports/token-service.js';
+import type { ContactRepository } from './domain/ports/contact-repository.js';
+import type { TrendsRepository } from './domain/ports/trends-repository.js';
 import { ArgonHasher } from './infrastructure/auth/argon.hasher.js';
 import { JwtTokenService } from './infrastructure/auth/jwt.token-service.js';
 import { CryptoRefreshTokenGenerator } from './infrastructure/auth/crypto-refresh-token.generator.js';
 import { createDb, type Database } from './infrastructure/persistence/db.js';
 import { DrizzleCategoryRepository } from './infrastructure/persistence/repositories/category.repository.js';
+import { DrizzleContactRepository } from './infrastructure/persistence/repositories/contact-message.repository.js';
 import { DrizzleEntitlementRepository } from './infrastructure/persistence/repositories/entitlement.repository.js';
 import { DrizzleOrderRepository } from './infrastructure/persistence/repositories/order.repository.js';
 import { DrizzleProductRepository } from './infrastructure/persistence/repositories/product.repository.js';
 import { DrizzleRefreshTokenRepository } from './infrastructure/persistence/repositories/refresh-token.repository.js';
 import { DrizzleUserRepository } from './infrastructure/persistence/repositories/user.repository.js';
+import { DrizzleTrendsRepository } from './infrastructure/persistence/repositories/trends.repository.js';
 import { DrizzleUnitOfWork } from './infrastructure/persistence/unit-of-work.js';
 import { RegisterUser } from './application/auth/register-user.js';
 import { LoginUser } from './application/auth/login-user.js';
@@ -48,6 +52,8 @@ import { UpdateProduct } from './application/admin/update-product.js';
 import { ChangeProductStatus } from './application/admin/change-product-status.js';
 import { ListProductsForAdmin } from './application/admin/list-products.js';
 import { ListAllOrders } from './application/admin/list-all-orders.js';
+import { SubmitContact } from './application/contact/submit-contact.js';
+import { GetTrends } from './application/trends/get-trends.js';
 import { FulfillmentService } from './domain/services/fulfillment.js';
 import { LicenseKeyGenerator } from './domain/services/license-key.js';
 import { SimulatedPaymentGateway } from './infrastructure/payment/simulated-payment.gateway.js';
@@ -72,6 +78,8 @@ export interface UseCases {
   changeProductStatus: ChangeProductStatus;
   listProductsForAdmin: ListProductsForAdmin;
   listAllOrders: ListAllOrders;
+  submitContact: SubmitContact;
+  getTrends: GetTrends;
 }
 
 export interface AppContainer {
@@ -89,6 +97,8 @@ export interface AppContainer {
   entitlementRepository: EntitlementRepository;
   refreshTokenRepository: RefreshTokenRepository;
   refreshTokenGenerator: RefreshTokenGenerator;
+  contactRepository: ContactRepository;
+  trendsRepository: TrendsRepository;
   useCases: UseCases;
 }
 
@@ -111,6 +121,8 @@ export function buildContainer(options: { databaseUrl?: string } = {}): AppConta
   const orderRepository = new DrizzleOrderRepository(db);
   const entitlementRepository = new DrizzleEntitlementRepository(db);
   const refreshTokenRepository = new DrizzleRefreshTokenRepository(db);
+  const contactRepository = new DrizzleContactRepository(db);
+  const trendsRepository = new DrizzleTrendsRepository(db);
 
   const issueTokenPair = new IssueTokenPair({
     tokens: tokenService,
@@ -166,6 +178,8 @@ export function buildContainer(options: { databaseUrl?: string } = {}): AppConta
     changeProductStatus: new ChangeProductStatus({ products: productRepository }),
     listProductsForAdmin: new ListProductsForAdmin({ products: productRepository }),
     listAllOrders: new ListAllOrders({ orders: orderRepository }),
+    submitContact: new SubmitContact({ contacts: contactRepository }),
+    getTrends: new GetTrends({ trends: trendsRepository }),
   };
 
   return {
@@ -182,6 +196,8 @@ export function buildContainer(options: { databaseUrl?: string } = {}): AppConta
     entitlementRepository,
     refreshTokenRepository,
     refreshTokenGenerator,
+    contactRepository,
+    trendsRepository,
     useCases,
   };
 }

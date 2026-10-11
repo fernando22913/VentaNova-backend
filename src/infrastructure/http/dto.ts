@@ -3,6 +3,8 @@ import type { Product } from '../../domain/model/product.js';
 import type { Category } from '../../domain/model/category.js';
 import type { Order } from '../../domain/model/order.js';
 import type { Entitlement } from '../../domain/model/entitlement.js';
+import type { ContactMessage } from '../../domain/model/contact-message.js';
+import type { TrendReport } from '../../domain/model/trends.js';
 import type { TokenPair } from '../../application/auth/issue-token-pair.js';
 
 /**
@@ -205,5 +207,36 @@ export function toLibraryItemDto(entitlement: Entitlement, product: Product): Pu
     licenseKey: entitlement.licenseKey,
     grantedAt: entitlement.grantedAt,
     product: toPublicProductDetail(product),
+  };
+}
+
+/**
+ * Contact submission response. Confirms the message was *stored* — there is no
+ * email transport, so nothing here should ever read as "email sent".
+ */
+export interface PublicContactMessage {
+  id: string;
+  name: string;
+  subject: string;
+  message: string;
+  createdAt: Date;
+}
+
+export function toContactMessageDto(message: ContactMessage): PublicContactMessage {
+  return {
+    id: message.id,
+    name: message.name,
+    subject: message.subject,
+    message: message.message,
+    createdAt: message.createdAt,
+  };
+}
+
+/** Trends response — a shallow copy of the aggregated report. */
+export function toTrendReportDto(report: TrendReport): TrendReport {
+  return {
+    totals: { ...report.totals },
+    sales: report.sales.map((point) => ({ ...point })),
+    bestSellers: report.bestSellers.map((seller) => ({ ...seller })),
   };
 }

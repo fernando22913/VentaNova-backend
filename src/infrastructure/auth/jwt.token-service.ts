@@ -17,7 +17,7 @@ export class JwtTokenService implements TokenService {
     private readonly secret: string,
     expiresInSeconds: number = 60 * 60, // 1 hour
   ) {
-    this.signOptions = { algorithm: 'HS256', expiresIn: expiresInSeconds, issuer: 'bytemarket' };
+    this.signOptions = { algorithm: 'HS256', expiresIn: expiresInSeconds, issuer: 'ventanova' };
   }
 
   sign(claims: TokenClaims): Promise<string> {
@@ -30,7 +30,7 @@ export class JwtTokenService implements TokenService {
     let payload: JwtPayload & { role?: unknown };
     try {
       payload = jwt.verify(token, this.secret, {
-        issuer: 'bytemarket',
+        issuer: 'ventanova',
         // Pin the accepted algorithm so a token can never be verified under a
         // different scheme than the one we sign with.
         algorithms: ['HS256'],

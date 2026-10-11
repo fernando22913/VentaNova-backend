@@ -14,21 +14,21 @@ describe('UserRepository (Drizzle)', () => {
   });
 
   it('creates a user and reads it back', async () => {
-    const user = await makeUser(repos, { email: 'alice@bytemarket.dev' });
+    const user = await makeUser(repos, { email: 'alice@ventanova.dev' });
     expect(user.id).toBeTruthy();
-    expect(user.email).toBe('alice@bytemarket.dev');
+    expect(user.email).toBe('alice@ventanova.dev');
     expect(user.role).toBe('CUSTOMER');
   });
 
   it('creates an admin user', async () => {
-    const admin = await makeUser(repos, { email: 'admin@bytemarket.dev', role: 'ADMIN' });
+    const admin = await makeUser(repos, { email: 'admin@ventanova.dev', role: 'ADMIN' });
     expect(admin.role).toBe('ADMIN');
   });
 
   it('finds a user by email case-insensitively (citext)', async () => {
-    await makeUser(repos, { email: 'Name@bytemarket.dev' });
-    const found = await repos.users.findByEmail('name@BYTEMARKET.DEV');
-    expect(found?.email).toBe('Name@bytemarket.dev');
+    await makeUser(repos, { email: 'Name@ventanova.dev' });
+    const found = await repos.users.findByEmail('name@VENTANOVA.DEV');
+    expect(found?.email).toBe('Name@ventanova.dev');
   });
 
   it('finds by id and returns null for unknowns', async () => {
@@ -38,7 +38,7 @@ describe('UserRepository (Drizzle)', () => {
   });
 
   it('enforces unique email at the database level', async () => {
-    const email = 'dup@bytemarket.dev';
+    const email = 'dup@ventanova.dev';
     await makeUser(repos, { email });
     await expect(makeUser(repos, { email })).rejects.toMatchObject({ cause: { code: '23505' } });
   });

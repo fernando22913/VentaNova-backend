@@ -31,7 +31,7 @@ describe('JwtTokenService (access tokens)', () => {
   it('rejects a token signed with a different secret', async () => {
     const forged = jwt.sign({ sub: 'attacker', role: 'ADMIN' }, 'a-completely-different-secret', {
       algorithm: 'HS256',
-      issuer: 'bytemarket',
+      issuer: 'ventanova',
       expiresIn: 3600,
     });
     await expect(service().verify(forged)).rejects.toBeInstanceOf(UnauthorizedError);
@@ -49,7 +49,7 @@ describe('JwtTokenService (access tokens)', () => {
   it('rejects a token signed with a different algorithm even if the secret matches', async () => {
     const forged = jwt.sign({ sub: 'u-1', role: 'ADMIN' }, SECRET, {
       algorithm: 'HS384',
-      issuer: 'bytemarket',
+      issuer: 'ventanova',
       expiresIn: 3600,
     });
     await expect(service().verify(forged)).rejects.toBeInstanceOf(UnauthorizedError);
@@ -63,7 +63,7 @@ describe('JwtTokenService (access tokens)', () => {
   it('rejects an unknown role claim', async () => {
     const forged = jwt.sign({ sub: 'u-1', role: 'SUPERADMIN' }, SECRET, {
       algorithm: 'HS256',
-      issuer: 'bytemarket',
+      issuer: 'ventanova',
       expiresIn: 3600,
     });
     await expect(service().verify(forged)).rejects.toBeInstanceOf(UnauthorizedError);
@@ -72,7 +72,7 @@ describe('JwtTokenService (access tokens)', () => {
   it('rejects a token that carries no expiry', async () => {
     const noExp = jwt.sign({ sub: 'u-1', role: 'CUSTOMER' }, SECRET, {
       algorithm: 'HS256',
-      issuer: 'bytemarket',
+      issuer: 'ventanova',
     });
     await expect(service().verify(noExp)).rejects.toBeInstanceOf(UnauthorizedError);
   });

@@ -12,7 +12,7 @@ describe('health endpoint', () => {
     const body = response.body as { status: string; service: string; timestamp: string };
 
     expect(response.status).toBe(200);
-    expect(body).toMatchObject({ status: 'ok', service: 'bytemarket-api' });
+    expect(body).toMatchObject({ status: 'ok', service: 'ventanova-api' });
     expect(typeof body.timestamp).toBe('string');
   });
 

@@ -49,8 +49,14 @@ export const ORDERS_CREATE_RATE_LIMIT: RateLimiterOptions = {
 };
 /** 300 / 15 min — generous so normal catalog browsing is never interrupted. */
 export const CATALOG_RATE_LIMIT: RateLimiterOptions = { windowMs: FIFTEEN_MINUTES, limit: 300 };
+/** 10 / 15 min — a human writing a contact message; stops inbox flooding. */
+export const CONTACT_RATE_LIMIT: RateLimiterOptions = { windowMs: FIFTEEN_MINUTES, limit: 10 };
+/** 300 / 15 min — aggregate read; same generous budget as the catalog. */
+export const TRENDS_RATE_LIMIT: RateLimiterOptions = { windowMs: FIFTEEN_MINUTES, limit: 300 };
 
 export const authRateLimiter = createRateLimiter(AUTH_RATE_LIMIT);
 export const paymentRateLimiter = createRateLimiter(PAYMENT_RATE_LIMIT);
 export const ordersCreateRateLimiter = createRateLimiter(ORDERS_CREATE_RATE_LIMIT);
 export const catalogRateLimiter = createRateLimiter(CATALOG_RATE_LIMIT);
+export const contactRateLimiter = createRateLimiter(CONTACT_RATE_LIMIT);
+export const trendsRateLimiter = createRateLimiter(TRENDS_RATE_LIMIT);

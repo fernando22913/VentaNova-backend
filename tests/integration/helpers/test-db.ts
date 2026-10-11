@@ -36,7 +36,7 @@ export async function getTestDatabase(): Promise<{ db: Database; client: postgre
 /** Empties every table; the app-layer order intentionally mirrors FK deps. */
 export async function resetDatabase(client: postgres.Sql): Promise<void> {
   await client.unsafe(
-    'TRUNCATE TABLE refresh_tokens, entitlements, order_items, orders, products, categories, users RESTART IDENTITY CASCADE',
+    'TRUNCATE TABLE refresh_tokens, entitlements, order_items, orders, products, categories, users, contact_messages RESTART IDENTITY CASCADE',
   );
 }
 

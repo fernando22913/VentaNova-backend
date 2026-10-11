@@ -53,7 +53,7 @@ function wire() {
 async function session(role: 'CUSTOMER' | 'ADMIN' = 'CUSTOMER') {
   const w = wire();
   const user = await w.users.create({
-    email: `${role.toLowerCase()}@bytemarket.dev`,
+    email: `${role.toLowerCase()}@ventanova.dev`,
     name: 'Test User',
     passwordHash: 'hashed:x',
     role,
@@ -150,13 +150,13 @@ describe('RefreshSession', () => {
   it('keeps sessions isolated per user', async () => {
     const w = wire();
     const alice = await w.users.create({
-      email: 'alice@bytemarket.dev',
+      email: 'alice@ventanova.dev',
       name: 'Alice',
       passwordHash: 'h',
       role: 'CUSTOMER',
     });
     const bob = await w.users.create({
-      email: 'bob@bytemarket.dev',
+      email: 'bob@ventanova.dev',
       name: 'Bob',
       passwordHash: 'h',
       role: 'CUSTOMER',
