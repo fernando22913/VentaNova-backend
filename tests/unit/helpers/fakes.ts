@@ -127,6 +127,10 @@ export class InMemoryUserRepository implements UserRepository {
     return null;
   }
 
+  async findAll(): Promise<User[]> {
+    return [...this.rows.values()];
+  }
+
   async create(input: UserCreateInput): Promise<User> {
     const user: User = {
       id: `u-${++this.sequence}`,
@@ -387,6 +391,7 @@ export class FakeUnitOfWork implements UnitOfWork {
 // --- Contact + Trends fakes ---------------------------------------------------
 
 import type { ContactMessage, ContactMessageCreateInput } from '../../../src/domain/model/contact-message.js';
+import type { ContactMessageReplyInput } from '../../../src/domain/model/contact-message.js';
 import type { ContactRepository } from '../../../src/domain/ports/contact-repository.js';
 import type { TrendReport } from '../../../src/domain/model/trends.js';
 import type { TrendsRepository } from '../../../src/domain/ports/trends-repository.js';
@@ -402,9 +407,31 @@ export class InMemoryContactRepository implements ContactRepository {
       email: input.email,
       subject: input.subject,
       message: input.message,
+      status: 'OPEN',
+      reply: null,
+      repliedAt: null,
+      repliedBy: null,
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
     };
     this.rows.push(message);
+    return message;
+  }
+
+  async findAll(): Promise<ContactMessage[]> {
+    return [...this.rows].reverse();
+  }
+
+  async findById(id: string): Promise<ContactMessage | null> {
+    return this.rows.find((row) => row.id === id) ?? null;
+  }
+
+  async reply(id: string, input: ContactMessageReplyInput): Promise<ContactMessage | null> {
+    const message = this.rows.find((row) => row.id === id);
+    if (!message) return null;
+    message.status = 'RESOLVED';
+    message.reply = input.reply;
+    message.repliedAt = new Date('2026-01-02T00:00:00.000Z');
+    message.repliedBy = input.repliedBy;
     return message;
   }
 }

@@ -13,6 +13,7 @@ import {
 import { sql } from 'drizzle-orm';
 
 import {
+  CONTACT_STATUSES,
   ORDER_STATUSES,
   PRODUCT_PLATFORMS,
   PRODUCT_STATUSES,
@@ -37,6 +38,7 @@ const productPlatformEnum = pgEnum('product_platform', [...PRODUCT_PLATFORMS]);
 const productStatusEnum = pgEnum('product_status', [...PRODUCT_STATUSES]);
 const userRoleEnum = pgEnum('user_role', [...USER_ROLES]);
 const orderStatusEnum = pgEnum('order_status', [...ORDER_STATUSES]);
+const contactStatusEnum = pgEnum('contact_status', [...CONTACT_STATUSES]);
 
 export const categories = pgTable('categories', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -173,9 +175,16 @@ export const contactMessages = pgTable(
     email: citext('email').notNull(),
     subject: text('subject').notNull(),
     message: text('message').notNull(),
+    status: contactStatusEnum('status').notNull().default('OPEN'),
+    reply: text('reply'),
+    repliedAt: timestamp('replied_at', { withTimezone: true, precision: 3 }),
+    repliedBy: uuid('replied_by').references(() => users.id),
     createdAt: timestamp('created_at', { withTimezone: true, precision: 3 }).notNull().defaultNow(),
   },
-  (table) => [index('contact_messages_created_at_idx').on(table.createdAt)],
+  (table) => [
+    index('contact_messages_created_at_idx').on(table.createdAt),
+    index('contact_messages_status_idx').on(table.status),
+  ],
 );
 
 export type CategoryRow = typeof categories.$inferSelect;

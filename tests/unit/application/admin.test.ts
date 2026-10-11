@@ -5,12 +5,16 @@ import { UpdateProduct } from '../../../src/application/admin/update-product.js'
 import { ChangeProductStatus } from '../../../src/application/admin/change-product-status.js';
 import { ListProductsForAdmin } from '../../../src/application/admin/list-products.js';
 import { ListAllOrders } from '../../../src/application/admin/list-all-orders.js';
+import { CreateUser } from '../../../src/application/admin/create-user.js';
+import { ListUsers } from '../../../src/application/admin/list-users.js';
 import { ConflictError, NotFoundError } from '../../../src/domain/errors/index.js';
 import type { Product } from '../../../src/domain/model/product.js';
 import {
+  FakeHasher,
   InMemoryCategoryRepository,
   InMemoryOrderRepository,
   InMemoryProductRepository,
+  InMemoryUserRepository,
 } from '../helpers/fakes.js';
 
 function product(overrides: Partial<Product> = {}): Product {
@@ -161,5 +165,43 @@ describe('ListAllOrders', () => {
 
     const all = await new ListAllOrders({ orders }).execute();
     expect(all).toHaveLength(2);
+  });
+});
+
+describe('CreateUser / ListUsers', () => {
+  it('creates a WORKER with a hashed password and normalizes the email', async () => {
+    const users = new InMemoryUserRepository();
+    const create = new CreateUser({ users, hasher: new FakeHasher() });
+
+    const user = await create.execute({
+      email: 'Worker@Test.dev',
+      name: 'Worker',
+      password: 'password123',
+      role: 'WORKER',
+    });
+
+    expect(user.role).toBe('WORKER');
+    expect(user.email).toBe('worker@test.dev');
+    expect(user.passwordHash).toBe('hashed:password123');
+  });
+
+  it('rejects a duplicate email with a ConflictError', async () => {
+    const users = new InMemoryUserRepository();
+    const create = new CreateUser({ users, hasher: new FakeHasher() });
+    await create.execute({ email: 'dup@test.dev', name: 'A', password: 'password123', role: 'WORKER' });
+
+    await expect(
+      create.execute({ email: 'DUP@test.dev', name: 'B', password: 'password123', role: 'WORKER' }),
+    ).rejects.toBeInstanceOf(ConflictError);
+  });
+
+  it('lists all users', async () => {
+    const users = new InMemoryUserRepository();
+    const create = new CreateUser({ users, hasher: new FakeHasher() });
+    await create.execute({ email: 'a@test.dev', name: 'A', password: 'password123', role: 'ADMIN' });
+    await create.execute({ email: 'b@test.dev', name: 'B', password: 'password123', role: 'WORKER' });
+
+    const list = await new ListUsers({ users }).execute();
+    expect(list.map((u) => u.role)).toEqual(['ADMIN', 'WORKER']);
   });
 });

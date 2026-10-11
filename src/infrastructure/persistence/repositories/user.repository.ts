@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 
 import type { User, UserCreateInput } from '../../../domain/model/user.js';
 import type { UserRepository } from '../../../domain/ports/user-repository.js';
@@ -17,6 +17,11 @@ export class DrizzleUserRepository implements UserRepository {
   async findByEmail(email: string): Promise<User | null> {
     const [row] = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
     return row ? rowToUser(row) : null;
+  }
+
+  async findAll(): Promise<User[]> {
+    const rows = await this.db.select().from(users).orderBy(asc(users.createdAt));
+    return rows.map(rowToUser);
   }
 
   async create(input: UserCreateInput): Promise<User> {

@@ -13,6 +13,7 @@ import { createOrdersRouter } from './routes/orders.routes.js';
 import { createLibraryRouter } from './routes/library.routes.js';
 import { createAdminRouter } from './routes/admin.routes.js';
 import { createContactRouter } from './routes/contact.routes.js';
+import { createContactsRouter } from './routes/contacts.routes.js';
 import { createTrendsRouter } from './routes/trends.routes.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { authRateLimiter, catalogRateLimiter } from './middleware/rate-limit.js';
@@ -62,6 +63,7 @@ export function createApp(container: AppContainer): Express {
   app.use('/api/v1/library', createLibraryRouter(container));
   app.use('/api/v1/admin', createAdminRouter(container));
   app.use('/api/v1/contact', createContactRouter(container));
+  app.use('/api/v1/contacts', createContactsRouter(container));
   app.use('/api/v1/trends', createTrendsRouter(container));
 
   app.use((_req: Request, res: Response) => {

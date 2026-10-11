@@ -1,12 +1,17 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
-import { PRODUCT_PLATFORMS, PRODUCT_STATUSES, PRODUCT_TYPES } from '../../../domain/model/enums.js';
+import {
+  PRODUCT_PLATFORMS,
+  PRODUCT_STATUSES,
+  PRODUCT_TYPES,
+  USER_ROLES,
+} from '../../../domain/model/enums.js';
 import type { AppContainer } from '../../../container.js';
 import { parseOrThrow, parseUuidParam } from '../validation.js';
 import { requireAuth } from '../middleware/require-auth.js';
-import { requireAdmin } from '../middleware/require-admin.js';
-import { toAdminOrderDto, toAdminProductDetail } from '../dto.js';
+import { requireRole } from '../middleware/require-role.js';
+import { toAdminOrderDto, toAdminProductDetail, toUserDto } from '../dto.js';
 
 const PRODUCT_SORTS = ['newest', 'price_asc', 'price_desc', 'title'] as const;
 
@@ -48,17 +53,28 @@ export const updateProductSchema = baseProductSchema.omit({ status: true }).part
 
 export const statusSchema = z.object({ status: z.enum([...PRODUCT_STATUSES]) });
 
+export const createUserSchema = z.object({
+  email: z.email({ message: 'Must be a valid email address' }),
+  name: z.string().trim().min(1, 'Name is required').max(80, 'Name is too long'),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(72),
+  role: z.enum([...USER_ROLES]).default('WORKER'),
+});
+
 export type ListProductsQuery = z.infer<typeof listQuerySchema>;
 export type CreateProductBody = z.infer<typeof baseProductSchema>;
 export type UpdateProductBody = z.infer<typeof updateProductSchema>;
 export type ChangeStatusBody = z.infer<typeof statusSchema>;
+export type CreateUserBody = z.infer<typeof createUserSchema>;
 
 export function createAdminRouter(container: AppContainer): Router {
   const router = Router();
-  router.use(requireAuth(container.tokenService), requireAdmin());
+  router.use(requireAuth(container.tokenService));
+
+  // Catalog management is shared by ADMIN and WORKER staff.
+  const staff = requireRole('ADMIN', 'WORKER');
 
   // --- Products -------------------------------------------------------------
-  router.get('/products', async (req, res) => {
+  router.get('/products', staff, async (req, res) => {
     const query = parseOrThrow(listQuerySchema, req.query);
     const result = await container.useCases.listProductsForAdmin.execute({
       sort: query.sort,
@@ -77,20 +93,20 @@ export function createAdminRouter(container: AppContainer): Router {
     });
   });
 
-  router.post('/products', async (req, res) => {
+  router.post('/products', staff, async (req, res) => {
     const input = parseOrThrow(baseProductSchema, req.body);
     const product = await container.useCases.createProduct.execute(input);
     res.status(201).json(toAdminProductDetail(product));
   });
 
-  router.patch('/products/:id', async (req, res) => {
+  router.patch('/products/:id', staff, async (req, res) => {
     const productId = parseUuidParam(req.params.id, 'product id');
     const changes = parseOrThrow(updateProductSchema, req.body);
     const product = await container.useCases.updateProduct.execute(productId, changes);
     res.json(toAdminProductDetail(product));
   });
 
-  router.patch('/products/:id/status', async (req, res) => {
+  router.patch('/products/:id/status', staff, async (req, res) => {
     const productId = parseUuidParam(req.params.id, 'product id');
     const { status } = parseOrThrow(statusSchema, req.body);
     const product = await container.useCases.changeProductStatus.execute(productId, status);
@@ -98,9 +114,21 @@ export function createAdminRouter(container: AppContainer): Router {
   });
 
   // --- Orders ---------------------------------------------------------------
-  router.get('/orders', async (_req, res) => {
+  router.get('/orders', staff, async (_req, res) => {
     const orders = await container.useCases.listAllOrders.execute();
     res.json({ items: orders.map(toAdminOrderDto) });
+  });
+
+  // --- Users (admin only) ---------------------------------------------------
+  router.get('/users', requireRole('ADMIN'), async (_req, res) => {
+    const users = await container.useCases.listUsers.execute();
+    res.json({ items: users.map(toUserDto) });
+  });
+
+  router.post('/users', requireRole('ADMIN'), async (req, res) => {
+    const input = parseOrThrow(createUserSchema, req.body);
+    const user = await container.useCases.createUser.execute(input);
+    res.status(201).json({ user: toUserDto(user) });
   });
 
   return router;

@@ -41,8 +41,16 @@ export { ListProductsForAdmin } from './admin/list-products.js';
 export type { ListProductsForAdminDeps } from './admin/list-products.js';
 export { ListAllOrders } from './admin/list-all-orders.js';
 export type { ListAllOrdersDeps } from './admin/list-all-orders.js';
+export { CreateUser } from './admin/create-user.js';
+export type { CreateUserDeps, CreateUserInput } from './admin/create-user.js';
+export { ListUsers } from './admin/list-users.js';
+export type { ListUsersDeps } from './admin/list-users.js';
 
 export { SubmitContact } from './contact/submit-contact.js';
 export type { SubmitContactDeps } from './contact/submit-contact.js';
+export { ListContacts } from './contact/list-contacts.js';
+export type { ListContactsDeps } from './contact/list-contacts.js';
+export { ReplyContact } from './contact/reply-contact.js';
+export type { ReplyContactDeps, ReplyContactInput } from './contact/reply-contact.js';
 export { GetTrends } from './trends/get-trends.js';
 export type { GetTrendsDeps } from './trends/get-trends.js';

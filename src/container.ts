@@ -52,7 +52,11 @@ import { UpdateProduct } from './application/admin/update-product.js';
 import { ChangeProductStatus } from './application/admin/change-product-status.js';
 import { ListProductsForAdmin } from './application/admin/list-products.js';
 import { ListAllOrders } from './application/admin/list-all-orders.js';
+import { CreateUser } from './application/admin/create-user.js';
+import { ListUsers } from './application/admin/list-users.js';
 import { SubmitContact } from './application/contact/submit-contact.js';
+import { ListContacts } from './application/contact/list-contacts.js';
+import { ReplyContact } from './application/contact/reply-contact.js';
 import { GetTrends } from './application/trends/get-trends.js';
 import { FulfillmentService } from './domain/services/fulfillment.js';
 import { LicenseKeyGenerator } from './domain/services/license-key.js';
@@ -78,7 +82,11 @@ export interface UseCases {
   changeProductStatus: ChangeProductStatus;
   listProductsForAdmin: ListProductsForAdmin;
   listAllOrders: ListAllOrders;
+  createUser: CreateUser;
+  listUsers: ListUsers;
   submitContact: SubmitContact;
+  listContacts: ListContacts;
+  replyContact: ReplyContact;
   getTrends: GetTrends;
 }
 
@@ -178,7 +186,11 @@ export function buildContainer(options: { databaseUrl?: string } = {}): AppConta
     changeProductStatus: new ChangeProductStatus({ products: productRepository }),
     listProductsForAdmin: new ListProductsForAdmin({ products: productRepository }),
     listAllOrders: new ListAllOrders({ orders: orderRepository }),
+    createUser: new CreateUser({ users: userRepository, hasher }),
+    listUsers: new ListUsers({ users: userRepository }),
     submitContact: new SubmitContact({ contacts: contactRepository }),
+    listContacts: new ListContacts({ contacts: contactRepository }),
+    replyContact: new ReplyContact({ contacts: contactRepository }),
     getTrends: new GetTrends({ trends: trendsRepository }),
   };
 

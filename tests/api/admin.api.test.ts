@@ -36,6 +36,7 @@ describe('Admin API (contract)', () => {
   let app: ReturnType<typeof createApp>;
   let adminToken: string;
   let customerToken: string;
+  let workerToken: string;
 
   beforeAll(async () => {
     const { db: database } = await getTestDatabase();
@@ -61,9 +62,16 @@ describe('Admin API (contract)', () => {
       role: 'CUSTOMER',
       passwordHash: await hasher.hash('password123'),
     });
+    await makeUser(repos, {
+      email: 'worker@test.dev',
+      name: 'Worker',
+      role: 'WORKER',
+      passwordHash: await hasher.hash('password123'),
+    });
 
     adminToken = await login('admin@test.dev');
     customerToken = await login('customer@test.dev');
+    workerToken = await login('worker@test.dev');
   });
 
   async function login(email: string): Promise<string> {
@@ -201,5 +209,71 @@ describe('Admin API (contract)', () => {
       .set('Authorization', `Bearer ${adminToken}`);
     expect(orders.status).toBe(200);
     expect(as<{ items: unknown[] }>(orders.body).items).toEqual([]);
+  });
+
+  it('lets a WORKER manage the catalog and read orders', async () => {
+    const category = await seedCategory();
+    const auth = { Authorization: `Bearer ${workerToken}` };
+
+    const list = await request(app).get('/api/v1/admin/products').set(auth);
+    expect(list.status).toBe(200);
+
+    const created = await request(app).post('/api/v1/admin/products').set(auth).send({
+      slug: 'worker-game',
+      title: 'Worker Game',
+      summary: 'Created by worker',
+      description: 'A full description of the product.',
+      type: 'GAME',
+      platform: 'CROSS',
+      categoryId: category.id,
+      priceCents: 1000,
+      coverImageUrl: null,
+      assetUrl: 'https://cdn.example.com/worker-game.zip',
+      status: 'DRAFT',
+    });
+    expect(created.status).toBe(201);
+
+    const orders = await request(app).get('/api/v1/admin/orders').set(auth);
+    expect(orders.status).toBe(200);
+  });
+
+  it('only lets an ADMIN provision accounts (worker gets 403)', async () => {
+    const payload = {
+      email: 'new-worker@test.dev',
+      name: 'New Worker',
+      password: 'password123',
+      role: 'WORKER',
+    };
+
+    const asWorker = await request(app)
+      .post('/api/v1/admin/users')
+      .set('Authorization', `Bearer ${workerToken}`)
+      .send(payload);
+    expect(asWorker.status).toBe(403);
+
+    const created = await request(app)
+      .post('/api/v1/admin/users')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(payload);
+    expect(created.status).toBe(201);
+    expect(as<{ user: { email: string; role: string } }>(created.body).user).toMatchObject({
+      email: 'new-worker@test.dev',
+      role: 'WORKER',
+    });
+
+    // The freshly provisioned worker can log in.
+    const login = await request(app)
+      .post('/api/v1/auth/login')
+      .send({ email: 'new-worker@test.dev', password: 'password123' });
+    expect(login.status).toBe(200);
+    expect(as<AuthBody>(login.body).access_token).toBeTruthy();
+
+    const users = await request(app)
+      .get('/api/v1/admin/users')
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(users.status).toBe(200);
+    expect(as<{ items: { email: string }[] }>(users.body).items.map((u) => u.email)).toContain(
+      'new-worker@test.dev',
+    );
   });
 });

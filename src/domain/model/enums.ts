@@ -15,11 +15,15 @@ export type ProductPlatform = (typeof PRODUCT_PLATFORMS)[number];
 export const PRODUCT_STATUSES = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
 export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
 
-export const USER_ROLES = ['CUSTOMER', 'ADMIN'] as const;
+export const USER_ROLES = ['CUSTOMER', 'WORKER', 'ADMIN'] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
 export const ORDER_STATUSES = ['PENDING', 'PAID', 'FAILED', 'CANCELLED'] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
+/** Lifecycle of a contact submission from the operator's inbox perspective. */
+export const CONTACT_STATUSES = ['OPEN', 'RESOLVED'] as const;
+export type ContactStatus = (typeof CONTACT_STATUSES)[number];
 
 export function isProductType(value: unknown): value is ProductType {
   return PRODUCT_TYPES.includes(value as ProductType);
@@ -39,4 +43,8 @@ export function isUserRole(value: unknown): value is UserRole {
 
 export function isOrderStatus(value: unknown): value is OrderStatus {
   return ORDER_STATUSES.includes(value as OrderStatus);
+}
+
+export function isContactStatus(value: unknown): value is ContactStatus {
+  return CONTACT_STATUSES.includes(value as ContactStatus);
 }

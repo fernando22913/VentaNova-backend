@@ -232,6 +232,39 @@ export function toContactMessageDto(message: ContactMessage): PublicContactMessa
   };
 }
 
+/**
+ * Staff inbox shape — the full message plus the operator reply fields. Only
+ * ever returned behind ADMIN/WORKER auth; the public POST response stays the
+ * minimal `PublicContactMessage`.
+ */
+export interface AdminContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: ContactMessage['status'];
+  reply: string | null;
+  repliedAt: Date | null;
+  repliedBy: string | null;
+  createdAt: Date;
+}
+
+export function toAdminContactMessageDto(message: ContactMessage): AdminContactMessage {
+  return {
+    id: message.id,
+    name: message.name,
+    email: message.email,
+    subject: message.subject,
+    message: message.message,
+    status: message.status,
+    reply: message.reply,
+    repliedAt: message.repliedAt,
+    repliedBy: message.repliedBy,
+    createdAt: message.createdAt,
+  };
+}
+
 /** Trends response — a shallow copy of the aggregated report. */
 export function toTrendReportDto(report: TrendReport): TrendReport {
   return {

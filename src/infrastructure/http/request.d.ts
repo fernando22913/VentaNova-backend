@@ -1,4 +1,4 @@
-import type { UserRole } from '../../domain/model/user.js';
+import type { UserRole } from '../../domain/model/enums.js';
 
 /**
  * Express Request augmentation: `req.auth` is set by `requireAuth` for
