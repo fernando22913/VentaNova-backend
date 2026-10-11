@@ -28,8 +28,7 @@ const allowedOrigins = env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
 export function createApp(container: AppContainer): Express {
   const app = express();
 
-  // Behind Render's proxy, trust the first hop so req.ip (rate limiting) is the
-  // real client address rather than the load balancer.
+  // Detrás del proxy de Render, confía en el primer salto para que req.ip (rate limiting) sea la IP real del cliente.
   if (env.NODE_ENV === 'production') {
     app.set('trust proxy', 1);
   }
@@ -38,8 +37,7 @@ export function createApp(container: AppContainer): Express {
   app.use(helmet());
   app.use(cors({ origin: allowedOrigins }));
   app.use(compression());
-  // Correlate every request: reuse an inbound `x-request-id` when the proxy
-  // supplies one, otherwise generate a UUID, and echo it back to the client.
+  // Correlaciona cada petición: reutiliza un `x-request-id` entrante o genera un UUID y lo devuelve.
   app.use(
     pinoHttp({
       logger,
@@ -55,8 +53,7 @@ export function createApp(container: AppContainer): Express {
 
   app.use('/api/v1/health', healthRouter);
   app.use('/api/v1/auth', authRateLimiter, createAuthRouter(container));
-  // Catalog reads share one IP-keyed budget: product search runs ILIKE scans,
-  // so unbounded requests are the cheapest way to load the database.
+  // Las lecturas de catálogo comparten un presupuesto por IP: búsquedas sin límite sobrecargarían la base de datos.
   app.use('/api/v1/categories', catalogRateLimiter, createCategoriesRouter(container));
   app.use('/api/v1/products', catalogRateLimiter, createProductsRouter(container));
   app.use('/api/v1/orders', createOrdersRouter(container));

@@ -5,7 +5,7 @@ export interface ListUsersDeps {
   users: UserRepository;
 }
 
-/** Admin-only: every account (password hashes are never mapped to a DTO). */
+// Solo admin: todas las cuentas (los hashes de contraseña nunca se mapean a un DTO).
 export class ListUsers {
   constructor(private readonly deps: ListUsersDeps) {}
 

@@ -101,7 +101,7 @@ describe('UnitOfWork (Drizzle transaction boundary)', () => {
       ],
     });
 
-    // A failed attempt must not leave order_items behind.
+    // Un intento fallido no debe dejar order_items atrás.
     await expect(
       uow.run(async (tx) => {
         await tx.orders.create({

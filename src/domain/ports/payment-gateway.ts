@@ -1,12 +1,4 @@
-/**
- * Payment gateway port — the hexagonal showcase (ADR-08).
- *
- * It will have three implementations behind one interface: an in-memory fake
- * (unit tests), the SimulatedPaymentGateway (production demo, Phase 5) and an
- * optional Stripe adapter (Phase 9). `PayOrder` never changes.
- *
- * Card details are a plain value object here and are never persisted.
- */
+// Puerto de pasarela de pago — el ejemplo hexagonal (ADR-08) con implementaciones intercambiables; los datos de tarjeta nunca se persisten.
 export interface CardDetails {
   cardName: string;
   cardNumber: string;

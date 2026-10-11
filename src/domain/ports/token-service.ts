@@ -1,12 +1,12 @@
 import type { UserRole } from '../model/index.js';
 
-/** Whatever we ask the signer to encode. The signer allocates iat/exp. */
+// Lo que pedimos al firmante que codifique. El firmante asigna iat/exp.
 export interface TokenClaims {
   sub: string;
   role: UserRole;
 }
 
-/** The decoded, verified token — iat/exp guaranteed present. */
+// Token decodificado y verificado — iat/exp garantizados.
 export interface TokenPayload extends TokenClaims {
   iat: number;
   exp: number;

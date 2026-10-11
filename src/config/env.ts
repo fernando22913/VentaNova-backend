@@ -16,21 +16,17 @@ const envSchema = z
     DATABASE_URL: z.string().min(1),
     CORS_ORIGIN: z.string().min(1),
     JWT_SECRET: z.string().min(16),
-    // Seed-only: credentials for the initial ADMIN account. Optional here so
-    // the API can boot without them; the seed enforces their presence and
-    // reads them from Render secrets in production (never hardcoded).
+    // Credenciales ADMIN solo para el seed; opcionales aquí, exigidas por el seed.
     ADMIN_EMAIL: z.email().optional(),
     ADMIN_PASSWORD: z.string().min(8).optional(),
-    // Token lifetimes (compact durations: s/m/h/d). Access tokens are
-    // short-lived JWTs; refresh tokens are opaque and rotated on every use.
+    // Duración de los tokens (duraciones compactas); los JWT de acceso son cortos, los refresh rotan.
     ACCESS_TOKEN_EXPIRES_IN: z.string().default('1h'),
     REFRESH_TOKEN_EXPIRES_IN: z.string().default('7d'),
-    // Structured-log verbosity. Test runs force `silent` regardless of this.
+    // Verbosidad del log estructurado; en los tests se fuerza `silent` siempre.
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   })
   .superRefine((value, ctx) => {
-    // Never boot a production deployment with the example/placeholder secret:
-    // anyone could then forge tokens. Fails fast instead of running insecure.
+    // Rechaza un JWT_SECRET de ejemplo en producción para evitar tokens falsificables.
     if (value.NODE_ENV === 'production' && /change[_-]?me|example|placeholder/i.test(value.JWT_SECRET)) {
       ctx.addIssue({
         code: 'custom',
@@ -39,7 +35,7 @@ const envSchema = z
       });
     }
 
-    // Reject malformed durations at boot rather than at the first login.
+    // Rechaza duraciones mal formadas al arrancar en lugar de en el primer login.
     for (const key of ['ACCESS_TOKEN_EXPIRES_IN', 'REFRESH_TOKEN_EXPIRES_IN'] as const) {
       try {
         parseDurationToSeconds(value[key]);

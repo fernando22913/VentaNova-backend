@@ -5,7 +5,7 @@ export interface ListCategoriesDeps {
   categories: CategoryRepository;
 }
 
-/** All categories — small, stable, cacheable. */
+// Todas las categorías — pocas, estables, cacheables.
 export class ListCategories {
   constructor(private readonly deps: ListCategoriesDeps) {}
 

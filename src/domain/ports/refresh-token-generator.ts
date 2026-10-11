@@ -1,15 +1,9 @@
-/**
- * Generates and hashes opaque refresh tokens.
- *
- * Kept as a port (like `Hasher`/`TokenService`) so the crypto adapter is the
- * only place that owns randomness and hashing, and use cases stay testable
- * with a deterministic fake.
- */
+// Puerto para generar y hashear refresh tokens opacos; mantiene la aleatoriedad/hash en el adaptador cripto.
 export interface RefreshTokenGenerator {
-  /** A new high-entropy opaque token — only its hash is persisted. */
+  // Un nuevo token opaco de alta entropía — solo se persiste su hash.
   generate(): string;
-  /** Stable hash used for lookup without ever storing the raw token. */
+  // Hash estable para búsquedas sin guardar nunca el token en claro.
   hash(token: string): string;
-  /** A new rotation-family id (one per login session). */
+  // Un nuevo id de familia de rotación (uno por sesión de login).
   generateFamilyId(): string;
 }

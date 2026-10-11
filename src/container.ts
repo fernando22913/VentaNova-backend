@@ -1,11 +1,4 @@
-/**
- * Composition root.
- *
- * The ONLY place where concrete infrastructure adapters are wired to the
- * application/domain pieces (blueprint §6). Manual constructor injection — no
- * DI framework. Each phase adds its adapters here; nothing else knows they
- * exist.
- */
+// Raíz de composición: único lugar donde se conectan los adaptadores de infraestructura con application/domain.
 import { env } from './config/env.js';
 import { parseDurationToSeconds } from './config/duration.js';
 import type { Hasher } from './domain/ports/hasher.js';
@@ -92,7 +85,7 @@ export interface UseCases {
 
 export interface AppContainer {
   db: Database;
-  /** Release the connection pool (called on graceful shutdown). */
+  // Libera el pool de conexiones (se llama al apagar ordenadamente).
   close(): Promise<void>;
   unitOfWork: UnitOfWork;
   hasher: Hasher;

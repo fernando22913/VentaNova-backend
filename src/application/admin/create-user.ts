@@ -16,11 +16,7 @@ export interface CreateUserDeps {
   hasher: Hasher;
 }
 
-/**
- * Admin-only: provision an account (typically a WORKER) with an operator
- * password. Unlike registration, the role here is trusted because the caller
- * is an authenticated admin — the route enforces that before this runs.
- */
+// Solo admin: crea una cuenta (normalmente WORKER); el rol se confía vía la ruta de admin.
 export class CreateUser {
   constructor(private readonly deps: CreateUserDeps) {}
 

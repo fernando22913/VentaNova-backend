@@ -18,13 +18,7 @@ export interface IssueTokenPairDeps {
   refreshTokenTtlSeconds: number;
 }
 
-/**
- * Issues the `(access token, refresh token)` pair shared by register, login and
- * refresh. The access token is a short-lived JWT; the refresh token is an
- * opaque random value whose hash is persisted. Passing `repository` lets the
- * refresh use case write inside its rotation transaction; `familyId` keeps the
- * new refresh token in the same rotation family.
- */
+// Emite el par (access JWT, refresh token opaco) que usan register, login y refresh.
 export class IssueTokenPair {
   constructor(private readonly deps: IssueTokenPairDeps) {}
 

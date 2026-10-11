@@ -4,12 +4,7 @@ import type {
   ContactMessageReplyInput,
 } from '../model/contact-message.js';
 
-/**
- * Persistence port for contact submissions. The public side only writes
- * (`create`); the operator inbox (`findAll`/`findById`) and the reply flow
- * (`reply`) are exercised by WORKER/ADMIN staff. Implemented by the Drizzle
- * adapter.
- */
+// Puerto de persistencia para mensajes de contacto; el lado público escribe mientras WORKER/ADMIN leen y responden.
 export interface ContactRepository {
   create(input: ContactMessageCreateInput): Promise<ContactMessage>;
   findAll(): Promise<ContactMessage[]>;

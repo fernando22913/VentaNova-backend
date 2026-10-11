@@ -6,7 +6,7 @@ export interface GetOrderDeps {
   orders: OrderRepository;
 }
 
-/** One order — but only its owner's (admin overview comes in Phase 6). */
+// Un pedido, pero solo de su dueño (la vista de admin llega después).
 export class GetOrder {
   constructor(private readonly deps: GetOrderDeps) {}
 

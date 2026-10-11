@@ -5,7 +5,7 @@ import type { CategoryRepository } from '../../../domain/ports/category-reposito
 import type { Database } from '../db.js';
 import { categories } from '../schema.js';
 
-/** Drizzle adapter for the CategoryRepository port. */
+// Adaptador Drizzle para el puerto CategoryRepository.
 export class DrizzleCategoryRepository implements CategoryRepository {
   constructor(private readonly db: Database) {}
 

@@ -5,7 +5,7 @@ import { ConflictError, NotFoundError } from '../../domain/errors/index.js';
 export interface ReplyContactInput {
   id: string;
   reply: string;
-  /** Operator (WORKER/ADMIN) recording the answer. */
+  // Operador (WORKER/ADMIN) que registra la respuesta.
   repliedBy: string;
 }
 
@@ -13,11 +13,7 @@ export interface ReplyContactDeps {
   contacts: ContactRepository;
 }
 
-/**
- * Records an operator reply on a contact message and marks it RESOLVED.
- * There is no email transport, so this stores the reply text alongside the
- * message; re-answering an already-resolved message is a 409.
- */
+// Registra la respuesta de un operador y marca el contacto como RESOLVED; re-responder da 409.
 export class ReplyContact {
   constructor(private readonly deps: ReplyContactDeps) {}
 

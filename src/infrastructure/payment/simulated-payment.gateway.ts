@@ -7,12 +7,7 @@ import type {
 } from '../../domain/ports/payment-gateway.js';
 import { ValidationError } from '../../domain/errors/index.js';
 
-/**
- * Deterministic demo gateway (blueprint §9, ADR-08) — no external calls.
- * Rule: Luhn-invalid → ValidationError; number ending in `0000` → declined
- * (insufficient funds); anything else → approved. Both outcomes demoable on
- * demand. Card data is validated and discarded; never touches the DB.
- */
+// Gateway demo determinista (sin llamadas externas): Luhn inválido rechaza, números que acaban en 0000 se declinan, si no aprueba.
 export class SimulatedPaymentGateway implements PaymentGateway {
   charge(card: CardDetails, _amountCents: number): Promise<PaymentResult> {
     const digits = card.cardNumber.replace(/\s+/g, '');
@@ -29,7 +24,7 @@ export class SimulatedPaymentGateway implements PaymentGateway {
   }
 }
 
-/** Luhn checksum for card numbers (12–19 digits). */
+// Checksum Luhn para números de tarjeta (12-19 dígitos).
 export function isLuhnValid(digits: string): boolean {
   if (!/^\d{12,19}$/.test(digits)) return false;
 

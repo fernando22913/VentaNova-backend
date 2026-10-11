@@ -104,7 +104,7 @@ describe('Commerce API (contract): order → payment → entitlement → library
     const create = await createOrder(auth.access_token, product.id, 2);
     expect(create.status).toBe(201);
     const order = as<OrderBody>(create.body);
-    expect(order).toMatchObject({ status: 'PENDING', totalCents: 5998 }); // 2999×2, recomputed
+    expect(order).toMatchObject({ status: 'PENDING', totalCents: 5998 }); // 2999×2, recalculado
     expect(order.items[0]).toMatchObject({
       titleSnapshot: 'Buy Me',
       unitPriceCents: 2999,
@@ -153,7 +153,7 @@ describe('Commerce API (contract): order → payment → entitlement → library
       .set('Authorization', `Bearer ${auth.access_token}`)
       .send(cardBody(DECLINED_CARD));
 
-    expect(pay.status).toBe(200); // a decline is order data, not a transport error
+    expect(pay.status).toBe(200); // un rechazo es dato del pedido, no un error de transporte
     const payBody = as<PayBody>(pay.body);
     expect(payBody.order.status).toBe('FAILED');
     expect(payBody.entitlements).toEqual([]);

@@ -10,12 +10,7 @@ export interface LogoutDeps {
   generator: RefreshTokenGenerator;
 }
 
-/**
- * Server-side logout: revoke the session that owns the presented refresh
- * token (the whole rotation family). Idempotent — an unknown or already
- * revoked token is a no-op success, so it never leaks whether the token
- * existed. It never touches the user or any other data.
- */
+// Logout en servidor: revoca toda la familia de rotación; no-op idempotente para tokens desconocidos.
 export class Logout {
   constructor(private readonly deps: LogoutDeps) {}
 

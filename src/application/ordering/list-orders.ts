@@ -5,7 +5,7 @@ export interface ListOrdersDeps {
   orders: OrderRepository;
 }
 
-/** A user's order history, newest first. */
+// Historial de pedidos de un usuario, del más reciente al más antiguo.
 export class ListOrders {
   constructor(private readonly deps: ListOrdersDeps) {}
 

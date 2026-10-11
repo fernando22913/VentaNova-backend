@@ -3,18 +3,7 @@ import type { Order } from '../model/order.js';
 import type { EntitlementCreateInput } from '../model/entitlement.js';
 import type { LicenseKeyGenerator } from './license-key.js';
 
-/**
- * Fulfillment: order → entitlements (domain invariant #3).
- *
- * A PAID order's items become one entitlement each, with a freshly generated
- * license key. The service is pure — it computes the entitlement writes; the
- * use case persists them inside the same transaction that flips the order to
- * PAID, so a process crash between payment and grant can never lose a
- * purchase (the transaction is all-or-nothing).
- *
- * Only PAID orders fulfill; calling this on any other status is a bug, and
- * the service refuses loudly rather than granting licenses for an unpaid order.
- */
+// Fulfillment: order → entitlements (invariante #3); cada item de un pedido PAID recibe una license key, y solo los pedidos PAID se cumplen.
 export class FulfillmentService {
   constructor(private readonly licenseKeys: LicenseKeyGenerator) {}
 

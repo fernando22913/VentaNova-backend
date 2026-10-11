@@ -20,7 +20,7 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Password is required').max(72),
 });
 
-/** Opaque refresh token presented by the client (raw value, never a JWT). */
+// Refresh token opaco presentado por el cliente (valor en bruto, nunca un JWT).
 export const refreshTokenSchema = z.object({
   refresh_token: z.string().trim().min(1, 'Refresh token is required').max(512),
 });

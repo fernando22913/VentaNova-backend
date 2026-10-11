@@ -2,15 +2,10 @@ import { randomBytes } from 'node:crypto';
 
 import { ValidationError } from '../errors/index.js';
 
-/**
- * Simulated license key in the format `BM-XXXXX-XXXXX-XXXXX`
- * (domain invariant #6). The key is stored readable — its purpose is to be
- * displayed to the buyer, it is not a secret — but it is still generated
- * with crypto-grade randomness.
- */
+// License key simulada con formato `BM-XXXXX-XXXXX-XXXXX` (invariante #6); se guarda legible pero se genera con aleatoriedad cripto.
 
 const PATTERN = /^BM-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$/;
-const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1 — least confusing
+const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin I/O/0/1 — menos confuso
 const GROUPS = 3;
 const GROUP_LENGTH = 5;
 

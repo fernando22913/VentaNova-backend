@@ -8,11 +8,7 @@ export interface SubmitContactDeps {
 export class SubmitContact {
   constructor(private readonly deps: SubmitContactDeps) {}
 
-  /**
-   * Persists a validated contact submission. Resolves only once the row is
-   * committed — a caller can treat a returned message as «stored», never
-   * «emailed» (there is no email transport).
-   */
+  // Persiste un contacto validado; devuelto significa guardado, nunca enviado por email.
   execute(input: ContactMessageCreateInput): Promise<ContactMessage> {
     return this.deps.contacts.create(input);
   }

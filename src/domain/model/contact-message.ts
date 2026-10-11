@@ -1,13 +1,6 @@
 import type { ContactStatus } from './enums.js';
 
-/**
- * A contact submission received through the public Contact endpoint.
- *
- * There is no email delivery infrastructure, so a submission is *persisted*
- * and later read by an operator. The client is told the message was received
- * and stored — never that an email was sent. A WORKER/ADMIN can record a reply
- * from the operator inbox; that reply is stored alongside the message.
- */
+// Contacto recibido por el endpoint público; se guarda para un operador, no se envía email.
 export interface ContactMessage {
   id: string;
   name: string;
@@ -15,18 +8,15 @@ export interface ContactMessage {
   subject: string;
   message: string;
   status: ContactStatus;
-  /** Operator reply body — null until the message is answered. */
+  // Cuerpo de la respuesta del operador: null hasta que se responda el mensaje.
   reply: string | null;
   repliedAt: Date | null;
-  /** Id of the operator (WORKER/ADMIN) who replied. */
+  // Id del operador (WORKER/ADMIN) que respondió.
   repliedBy: string | null;
   createdAt: Date;
 }
 
-/**
- * Boundary-validated payload used to create a message. The zod schema in the
- * route trims and bounds every field before the use case sees it.
- */
+// Payload validado en el límite para crear un mensaje; el esquema zod de la ruta recorta y acota los campos.
 export interface ContactMessageCreateInput {
   name: string;
   email: string;
@@ -34,7 +24,7 @@ export interface ContactMessageCreateInput {
   message: string;
 }
 
-/** Operator reply recorded from the contact inbox. */
+// Respuesta del operador registrada desde la bandeja de contactos.
 export interface ContactMessageReplyInput {
   reply: string;
   repliedBy: string;

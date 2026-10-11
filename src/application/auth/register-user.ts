@@ -21,12 +21,7 @@ export interface RegisterUserDeps {
   issueTokenPair: IssueTokenPair;
 }
 
-/**
- * Register a customer. Emails are normalized to lowercase and uniqueness is
- * expressed as a 409 Conflict when it fails — the DB's citext unique
- * constraint is the backstop under concurrency. The client-supplied role is
- * never trusted; registration always creates a CUSTOMER.
- */
+// Registra un cliente con email normalizado; el rol nunca se confía, siempre CUSTOMER.
 export class RegisterUser {
   constructor(private readonly deps: RegisterUserDeps) {}
 

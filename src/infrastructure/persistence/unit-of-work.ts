@@ -4,15 +4,7 @@ import { DrizzleEntitlementRepository } from './repositories/entitlement.reposit
 import { DrizzleOrderRepository } from './repositories/order.repository.js';
 import { DrizzleRefreshTokenRepository } from './repositories/refresh-token.repository.js';
 
-/**
- * Drizzle UnitOfWork adapter. `db.transaction()` gives us a transaction-scoped
- * handle; the callback receives repositories bound to that exact handle, so
- * order status + entitlements commit (or roll back) as one atomic unit.
- *
- * The tx handle is structurally identical to a database handle for our
- * purposes (both expose the same query builders); the cast is contained to
- * this adapter on purpose — it is the seam where transactions are materialized.
- */
+// Adaptador Drizzle UnitOfWork: vincula los repositorios a un handle de una transacción para que las escrituras se confirmen o reviertan juntas.
 export class DrizzleUnitOfWork implements UnitOfWork {
   constructor(private readonly db: Database) {}
 

@@ -7,8 +7,7 @@ export interface ChangeProductStatusDeps {
   products: ProductRepository;
 }
 
-/** Admin: publish / archive / re-draft. Archive is a soft delete — orders keep
- * working from their snapshots (blueprint §7). */
+// Admin: publica / archiva / vuelve a borrador; archivar es borrado lógico vía snapshots de pedidos.
 export class ChangeProductStatus {
   constructor(private readonly deps: ChangeProductStatusDeps) {}
 

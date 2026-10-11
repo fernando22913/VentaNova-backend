@@ -8,7 +8,7 @@ import type { RefreshTokenRepository } from '../../../domain/ports/refresh-token
 import type { Database } from '../db.js';
 import { refreshTokens } from '../schema.js';
 
-/** Drizzle adapter for the RefreshTokenRepository port (stores hashes only). */
+// Adaptador Drizzle para el puerto RefreshTokenRepository (solo guarda hashes).
 export class DrizzleRefreshTokenRepository implements RefreshTokenRepository {
   constructor(private readonly db: Database) {}
 

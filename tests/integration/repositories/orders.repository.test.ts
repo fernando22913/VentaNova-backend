@@ -28,7 +28,7 @@ describe('OrderRepository (Drizzle)', () => {
     });
     const order = await repos.orders.create({
       userId: user.id,
-      totalCents: 2997, // 1999 + 499×2 — server-recomputed in the real use case
+      totalCents: 2997, // 1999 + 499×2, recalculado en el servidor en el caso real
       items: [
         { productId: pinApple.id, titleSnapshot: 'Pinapple', unitPriceCents: 1999, quantity: 1 },
         { productId: stick6.id, titleSnapshot: 'Sticky6', unitPriceCents: 499, quantity: 2 },
@@ -99,7 +99,7 @@ describe('OrderRepository (Drizzle)', () => {
     const { order } = await seedOrder();
     await repos.orders.transitionStatus(order.id, 'PENDING', 'PAID', new Date());
 
-    // A second attempt from the stale PENDING state must not overwrite PAID.
+    // Un segundo intento desde un PENDING obsoleto no debe sobrescribir PAID.
     expect(await repos.orders.transitionStatus(order.id, 'PENDING', 'FAILED')).toBeNull();
     expect((await repos.orders.findById(order.id))?.status).toBe('PAID');
   });

@@ -25,14 +25,7 @@ export interface PayOrderDeps {
   fulfillment: FulfillmentService;
 }
 
-/**
- * Executes the simulated payment for a PENDING order.
- *
- * A decline is *domain data*, not an HTTP error: the order flips to FAILED and
- * stays queryable (blueprint §7). An approval flips the order to PAID and
- * grants entitlements inside one transaction, so a crash between payment
- * success and entitlement insert can never lose a purchase.
- */
+// Pago simulado de un pedido PENDING: rechazo -> FAILED (dato de dominio), aprobación -> PAID + entitlements en una transacción.
 export class PayOrder {
   constructor(private readonly deps: PayOrderDeps) {}
 
@@ -48,23 +41,20 @@ export class PayOrder {
       throw new ConflictError(`Order is already ${order.status}`);
     }
 
-    // The order was PENDING when we read it; assert the transition up front so
-    // an illegal move is rejected by the domain before we touch the gateway.
+    // El pedido era PENDING al leerlo; valida la transición antes de tocar la pasarela.
     assertOrderTransition(order.status, 'PAID');
 
     const payment = await this.deps.payments.charge(input.card, order.totalCents);
 
     if (!payment.approved) {
-      // Compare-and-set from PENDING: a concurrent successful payment can never
-      // be clobbered back to FAILED.
+      // Compare-and-set desde PENDING para que un pago concurrente no sobrescriba FAILED.
       const failed = await this.deps.orders.transitionStatus(order.id, 'PENDING', 'FAILED');
       if (!failed) throw new ConflictError('Order is no longer pending');
       return { order: failed, entitlements: [] };
     }
 
     const result = await this.deps.unitOfWork.run(async (tx) => {
-      // Compare-and-set inside the transaction: only the first approval wins,
-      // so entitlements can never be granted twice for one order.
+      // Compare-and-set dentro de la transacción: solo la primera aprobación otorga entitlements.
       const paid = await tx.orders.transitionStatus(order.id, 'PENDING', 'PAID', new Date());
       if (!paid) throw new ConflictError('Order is no longer pending');
       const grants = await tx.entitlements.createMany(this.deps.fulfillment.fulfill(paid));

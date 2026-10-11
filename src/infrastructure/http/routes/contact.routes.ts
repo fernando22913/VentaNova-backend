@@ -6,11 +6,7 @@ import { parseOrThrow } from '../validation.js';
 import { contactRateLimiter } from '../middleware/rate-limit.js';
 import { toContactMessageDto } from '../dto.js';
 
-/**
- * Public contact submission. Fields are trimmed and bounded at the boundary so
- * garbage never reaches the database. The body parser already caps payloads at
- * 100kb and the router-level limiter bounds submissions per IP.
- */
+// Envío público de contacto: campos recortados y acotados en el límite antes de llegar a la base de datos.
 export const createContactSchema = z.object({
   name: z
     .string({ message: 'Se requiere un nombre' })

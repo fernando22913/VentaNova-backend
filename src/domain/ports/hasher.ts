@@ -1,8 +1,4 @@
-/**
- * Hasher port — swappable password hashing (argon2id in production).
- * The core never sees plaintext passwords in persistence; adapters that
- * implement Hasher are the only place hashing algorithms live.
- */
+// Puerto Hasher — hashing de contraseñas intercambiable (argon2id en producción); solo los adaptadores conocen los algoritmos.
 export interface Hasher {
   hash(plain: string): Promise<string>;
   verify(plain: string, hash: string): Promise<boolean>;

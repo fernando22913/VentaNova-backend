@@ -129,6 +129,6 @@ describe('ListCategories', () => {
     await categories.create({ slug: 'game', name: 'Games' });
 
     const result = await new ListCategories({ categories }).execute();
-    expect(result.map((c) => c.slug)).toEqual(['asset', 'game']); // sorted by name (A < G)
+    expect(result.map((c) => c.slug)).toEqual(['asset', 'game']); // ordenado por nombre (A < G)
   });
 });

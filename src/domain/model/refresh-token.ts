@@ -1,11 +1,4 @@
-/**
- * A persisted refresh-token session entry.
- *
- * The raw token lives only on the client — this is the *hash* we store so a
- * database leak cannot be replayed as a credential. `familyId` groups every
- * token produced by one login session, which lets us detect reuse of an
- * already-rotated token and revoke the whole chain.
- */
+// Sesión de refresh-token persistida; solo guarda el hash y familyId agrupa una sesión de login para detectar reutilización.
 export interface RefreshToken {
   id: string;
   userId: string;

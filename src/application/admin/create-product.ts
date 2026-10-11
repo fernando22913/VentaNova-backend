@@ -8,7 +8,7 @@ export interface CreateProductDeps {
   categories: CategoryRepository;
 }
 
-/** Admin: create a product (DRAFT or directly PUBLISHED). */
+// Admin: crea un producto (DRAFT o directamente PUBLISHED).
 export class CreateProduct {
   constructor(private readonly deps: CreateProductDeps) {}
 

@@ -114,7 +114,7 @@ describe('LoginUser', () => {
       login.execute({ email: 'ghost@example.com', password: 'password123' }),
     ).rejects.toBeInstanceOf(UnauthorizedError);
 
-    // A dummy verify burns argon2 work so unknown-email timing matches wrong-password.
+    // Una verificación ficticia gasta trabajo de argon2 para igualar el tiempo de email desconocido al de contraseña incorrecta.
     expect(verify).toHaveBeenCalledTimes(1);
   });
 });

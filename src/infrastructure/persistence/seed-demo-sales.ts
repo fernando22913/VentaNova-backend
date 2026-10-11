@@ -6,16 +6,7 @@ import { logger } from '../logging/logger.js';
 import { createDb } from './db.js';
 import { entitlements, orderItems, orders, products, users } from './schema.js';
 
-/**
- * Optional demo-sales seeder (not part of the production release pipeline).
- *
- * Creates a demo customer and a spread of PAID orders across the last 30 days
- * so the public `GET /trends` view has data to render. Safe to re-run: it
- * clears only the demo customer's own orders/entitlements before reseeding,
- * and never touches other users or the product catalog.
- *
- * Run with: `npm run db:seed:sales` (after `db:migrate` and `db:seed`).
- */
+// Seeder opcional de ventas demo: crea un cliente demo y órdenes PAID de los últimos 30 días; reejecutable, solo toca a ese cliente.
 
 const DEMO_EMAIL = process.env.DEMO_SEED_EMAIL ?? 'cliente.demo@ventanova.dev';
 const DEMO_NAME = 'Cliente Demo';
@@ -27,7 +18,7 @@ const DAY_MS = 86_400_000;
 
 const { db, client } = createDb(env.DATABASE_URL);
 
-// --- Demo user (find or create) ---------------------------------------------
+// Usuario demo (buscar o crear)
 const [existing] = await db.select().from(users).where(eq(users.email, DEMO_EMAIL));
 let userId = existing?.id;
 if (!userId) {
@@ -43,11 +34,11 @@ if (!userId) {
   logger.info({ email: DEMO_EMAIL }, 'Demo customer already exists');
 }
 
-// --- Reset the demo customer's own sales ------------------------------------
+// Reinicia las ventas del propio cliente demo
 await db.delete(entitlements).where(eq(entitlements.userId, userId));
 await db.delete(orders).where(eq(orders.userId, userId));
 
-// --- Regenerate PAID orders spread over the last 30 days --------------------
+// Regenera órdenes PAID repartidas por los últimos 30 días
 const catalog = await db
   .select()
   .from(products)

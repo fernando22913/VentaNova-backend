@@ -122,12 +122,12 @@ describe('RefreshSession', () => {
     const { w, pair } = await session();
     const rotated = await w.refreshSession.execute({ refreshToken: pair.refreshToken });
 
-    // Replaying the old token is rejected…
+    // Reutilizar el token antiguo se rechaza...
     await expect(
       w.refreshSession.execute({ refreshToken: pair.refreshToken }),
     ).rejects.toBeInstanceOf(UnauthorizedError);
 
-    // …and the still-valid descendant is revoked too (theft containment).
+    // ...y el descendiente aún válido también se revoca (contención de robo).
     await expect(
       w.refreshSession.execute({ refreshToken: rotated.tokens.refreshToken }),
     ).rejects.toBeInstanceOf(UnauthorizedError);
@@ -169,7 +169,7 @@ describe('RefreshSession', () => {
     });
     expect(rotatedAlice.user.id).toBe(alice.id);
 
-    // B's session is untouched by A's rotation.
+    // La sesión de B no se ve afectada por la rotación de A.
     const rotatedBob = await w.refreshSession.execute({ refreshToken: bobPair.refreshToken });
     expect(rotatedBob.user.id).toBe(bob.id);
   });

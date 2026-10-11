@@ -3,17 +3,11 @@ import rateLimit from 'express-rate-limit';
 
 import { env } from '../../../config/env.js';
 
-/**
- * Rate limiting (blueprint §10) for the surfaces worth abusing: credentials,
- * payment, order creation and the ILIKE-backed catalog search. Disabled under
- * tests so the suite can hammer endpoints freely; active in development and
- * production. Limits are deliberately generous — they stop runaway abuse, not
- * normal browsing.
- */
+// Rate limiting (blueprint §10) para superficies propensas al abuso; desactivado en tests, activo en dev/prod.
 export interface RateLimiterOptions {
   windowMs: number;
   limit: number;
-  /** Override for tests that need the limiter actually enforcing. */
+  // Override para tests que necesitan que el limiter aplique de verdad.
   enabled?: boolean;
 }
 
@@ -38,20 +32,20 @@ export function createRateLimiter(options: RateLimiterOptions): RequestHandler {
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
 
-/** 30 / 15 min — brute-forcing credentials. */
+// 30 / 15 min — fuerza bruta de credenciales.
 export const AUTH_RATE_LIMIT: RateLimiterOptions = { windowMs: FIFTEEN_MINUTES, limit: 30 };
-/** 30 / 15 min — card guessing on a pending order. */
+// 30 / 15 min — adivinanza de tarjeta en un pedido pendiente.
 export const PAYMENT_RATE_LIMIT: RateLimiterOptions = { windowMs: FIFTEEN_MINUTES, limit: 30 };
-/** 60 / 15 min — order creation; stops unlimited PENDING-row growth. */
+// 60 / 15 min — creación de pedidos; frena el crecimiento ilimitado de filas PENDING.
 export const ORDERS_CREATE_RATE_LIMIT: RateLimiterOptions = {
   windowMs: FIFTEEN_MINUTES,
   limit: 60,
 };
-/** 300 / 15 min — generous so normal catalog browsing is never interrupted. */
+// 300 / 15 min — generoso para no interrumpir la navegación normal del catálogo.
 export const CATALOG_RATE_LIMIT: RateLimiterOptions = { windowMs: FIFTEEN_MINUTES, limit: 300 };
-/** 10 / 15 min — a human writing a contact message; stops inbox flooding. */
+// 10 / 15 min — una persona escribiendo un mensaje de contacto; frena el spam de la bandeja.
 export const CONTACT_RATE_LIMIT: RateLimiterOptions = { windowMs: FIFTEEN_MINUTES, limit: 10 };
-/** 300 / 15 min — aggregate read; same generous budget as the catalog. */
+// 300 / 15 min — lectura agregada; mismo presupuesto generoso que el catálogo.
 export const TRENDS_RATE_LIMIT: RateLimiterOptions = { windowMs: FIFTEEN_MINUTES, limit: 300 };
 
 export const authRateLimiter = createRateLimiter(AUTH_RATE_LIMIT);

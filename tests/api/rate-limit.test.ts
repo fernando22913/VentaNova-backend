@@ -51,7 +51,7 @@ describe('rate limiter middleware', () => {
 
   it('is disabled by default under NODE_ENV=test, so the suite is never rate limited', async () => {
     const app = express();
-    // No `enabled` override → falls back to NODE_ENV !== 'test'.
+    // Sin override de `enabled`, cae a NODE_ENV !== 'test'.
     app.use(createRateLimiter({ windowMs: 60_000, limit: 0 }));
     app.get('/', (_req, res) => res.json({ ok: true }));
     const response = await request(app).get('/');

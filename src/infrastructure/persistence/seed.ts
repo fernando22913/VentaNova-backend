@@ -10,21 +10,7 @@ import { createDb } from './db.js';
 import { runMigrations } from './run-migrations.js';
 import { categories, products, users } from './schema.js';
 
-/**
- * Declarative seed for the database:
- *  - 4 categories
- *  - 23 products (21 published, 1 DRAFT and 1 ARCHIVED to demo admin)
- *  - 1 admin user
- *
- * The script is idempotent: it seeds only rows that are missing (matched by
- * unique slug/email), so re-running after schema changes is safe.
- *
- * Initial admin credentials come from the environment — never from source:
- *  - ADMIN_EMAIL    — the admin account email (backend/.env locally, a Render
- *                     environment variable in production)
- *  - ADMIN_PASSWORD — the initial password (backend/.env locally, a Render
- *                     secret in production)
- */
+// Seed declarativo e idempotente: 4 categorías, 23 productos y 1 admin; las credenciales del admin vienen del entorno.
 
 const adminEmail = env.ADMIN_EMAIL;
 const adminPassword = env.ADMIN_PASSWORD;
@@ -41,7 +27,7 @@ await runMigrations(env.DATABASE_URL);
 const { db, client } = createDb(env.DATABASE_URL);
 const hasher = new ArgonHasher();
 
-// --- Categories -------------------------------------------------------------
+// Categorías
 const seedCategories: CategoryCreateInput[] = [
   { slug: 'videogames', name: 'Videogames' },
   { slug: 'software', name: 'Software' },
@@ -63,7 +49,7 @@ for (const category of seedCategories) {
   categoryIds.set(category.slug, created.id);
 }
 
-// --- Products (23 shop items) -------------------------------------------------
+// Productos (23 ítems de tienda)
 type SeedProduct = {
   slug: string;
   title: string;
@@ -78,7 +64,7 @@ type SeedProduct = {
 };
 
 const seedProducts: SeedProduct[] = [
-  // Videogames
+  // Videojuegos
   {
     slug: 'neo-tokyo-racer',
     title: 'Neo Tokyo Racer',
@@ -264,7 +250,7 @@ const seedProducts: SeedProduct[] = [
     hasCover: false,
   },
 
-  // DLC & Add-ons
+  // DLC y complementos
   {
     slug: 'neo-tokyo-racer-skyline-dlc',
     title: 'Neo Tokyo Racer: Skyline District',
@@ -330,7 +316,7 @@ const seedProducts: SeedProduct[] = [
     hasCover: true,
   },
 
-  // Digital Assets
+  // Recursos digitales
   {
     slug: 'neon-city-pbr-pack',
     title: 'Neon City PBR Pack',
@@ -409,9 +395,7 @@ for (const product of seedProducts) {
   await db.insert(products).values(input);
 }
 
-// --- Admin user --------------------------------------------------------------
-// Idempotent and password-preserving: an existing admin is never overwritten,
-// so redeploying cannot reset (or silently downgrade) a rotated password.
+// Usuario admin: idempotente y conserva la contraseña, nunca sobrescribe un admin existente.
 const [existingAdmin] = await db.select().from(users).where(eq(users.email, adminEmail));
 if (existingAdmin) {
   logger.info({ adminEmail }, 'Admin already exists (password left unchanged)');

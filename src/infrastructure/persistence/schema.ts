@@ -21,12 +21,7 @@ import {
   USER_ROLES,
 } from '../../domain/model/enums.js';
 
-/**
- * PostgreSQL `citext` type (no built-in support in this Drizzle version, so
- * declared via customType). Requires `CREATE EXTENSION citext`, emitted at the
- * top of the first migration. Case-insensitive email uniqueness without
- * application-side normalization.
- */
+// Tipo `citext` de PostgreSQL declarado con customType; requiere `CREATE EXTENSION citext` en la primera migración.
 const citext = customType<{ data: string; driverData: string }>({
   dataType() {
     return 'citext';
@@ -96,8 +91,7 @@ export const orders = pgTable(
   },
   (table) => [
     index('orders_user_created_idx').on(table.userId, table.createdAt),
-    // Defense-in-depth: the application recomputes totals from DB prices, but
-    // the database itself must reject a negative total if that ever regresses.
+    // Defensa en profundidad: la BD debe rechazar un total negativo aunque la app lo recalcule.
     check('orders_total_cents_non_negative', sql`${table.totalCents} >= 0`),
   ],
 );
@@ -153,9 +147,9 @@ export const refreshTokens = pgTable(
     userId: uuid('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    // Rotation family: every token minted from one login session shares it.
+    // Familia de rotación: todo token emitido desde una misma sesión de login la comparte.
     familyId: uuid('family_id').notNull(),
-    // SHA-256 of the opaque token. The raw token is never stored.
+    // SHA-256 del token opaco. El token en claro nunca se guarda.
     tokenHash: text('token_hash').notNull().unique(),
     expiresAt: timestamp('expires_at', { withTimezone: true, precision: 3 }).notNull(),
     revokedAt: timestamp('revoked_at', { withTimezone: true, precision: 3 }),

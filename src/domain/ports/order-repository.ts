@@ -2,18 +2,13 @@ import type { Order, OrderCreateInput, OrderStatus } from '../model/index.js';
 
 export interface OrderRepository {
   findById(id: string): Promise<Order | null>;
-  /** A user's orders, newest first. */
+  // Pedidos de un usuario, del más reciente al más antiguo.
   findByUser(userId: string): Promise<Order[]>;
-  /** All orders (admin), newest first. */
+  // Todos los pedidos (admin), del más reciente al más antiguo.
   findAll(): Promise<Order[]>;
-  /** Creates the order and its items atomically. */
+  // Crea el pedido y sus items de forma atómica.
   create(input: OrderCreateInput): Promise<Order>;
-  /**
-   * Atomic compare-and-set for the order state machine: moves an order from
-   * `from` to `to`, recording `paidAt` when provided. Returns null when the
-   * order was not in `from` (it lost a payment race or was already settled),
-   * so a concurrent request can never overwrite a terminal state.
-   */
+  // Transición compare-and-set atómica; devuelve null si el pedido no estaba en `from`, así los estados terminales nunca se sobrescriben.
   transitionStatus(
     id: string,
     from: OrderStatus,

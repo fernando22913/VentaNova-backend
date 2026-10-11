@@ -6,7 +6,7 @@ export interface GetMeDeps {
   users: UserRepository;
 }
 
-/** Current user from the authenticated token's subject. */
+// Usuario actual a partir del subject del token autenticado.
 export class GetMe {
   constructor(private readonly deps: GetMeDeps) {}
 

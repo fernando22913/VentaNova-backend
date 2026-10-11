@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/require-await -- in-memory fakes return
-   resolved promises; they never need real asynchrony. */
+/* eslint-disable @typescript-eslint/require-await -- los fakes en memoria devuelven promesas resueltas; nunca necesitan asincronía real. */
 import type { User, UserCreateInput } from '../../../src/domain/model/user.js';
 import type { Category, CategoryCreateInput } from '../../../src/domain/model/category.js';
 import type { Product, ProductCreateInput } from '../../../src/domain/model/product.js';
@@ -24,10 +23,7 @@ import type { RefreshTokenRepository } from '../../../src/domain/ports/refresh-t
 import type { RefreshTokenGenerator } from '../../../src/domain/ports/refresh-token-generator.js';
 import { UnauthorizedError } from '../../../src/domain/errors/index.js';
 
-/**
- * In-memory fakes for application-layer tests — the hexagonal payoff: use
- * cases are exercised with zero DB and zero HTTP (blueprint §11).
- */
+// Fakes en memoria para tests de la capa de aplicación: los casos de uso corren sin DB ni HTTP.
 
 export class FakeHasher implements Hasher {
   async hash(plain: string): Promise<string> {
@@ -264,7 +260,7 @@ export class InMemoryProductRepository implements ProductRepository {
   }
 }
 
-// --- Phase 5 fakes: orders, entitlements, payment, unit of work ---------------
+// --- Fakes de la Fase 5: orders, entitlements, payment, unit of work ---------------
 
 import type { Order, OrderCreateInput } from '../../../src/domain/model/order.js';
 import type { Entitlement, EntitlementCreateInput } from '../../../src/domain/model/entitlement.js';
@@ -388,7 +384,7 @@ export class FakeUnitOfWork implements UnitOfWork {
   }
 }
 
-// --- Contact + Trends fakes ---------------------------------------------------
+// --- Fakes de Contact + Trends ---------------------------------------------------
 
 import type { ContactMessage, ContactMessageCreateInput } from '../../../src/domain/model/contact-message.js';
 import type { ContactMessageReplyInput } from '../../../src/domain/model/contact-message.js';

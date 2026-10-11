@@ -8,7 +8,7 @@ export interface UpdateProductDeps {
   categories: CategoryRepository;
 }
 
-/** Admin: edit product fields (price edits never touch past orders — snapshot). */
+// Admin: edita campos del producto (editar el precio nunca afecta pedidos pasados — snapshot).
 export class UpdateProduct {
   constructor(private readonly deps: UpdateProductDeps) {}
 

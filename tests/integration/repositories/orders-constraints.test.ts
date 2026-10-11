@@ -3,11 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { getTestDatabase, resetDatabase } from '../helpers/test-db.js';
 import { makeUser, repositories } from '../helpers/factories.js';
 
-/**
- * Defense-in-depth: the application always recomputes totals from DB prices,
- * but the database itself must refuse a negative `total_cents` if that ever
- * regresses. These tests exercise the raw constraint, bypassing the adapter.
- */
+// La app recalcula los totales desde los precios de la DB, pero la DB debe rechazar un total_cents negativo.
 describe('orders.total_cents database constraint', () => {
   let ctx: Awaited<ReturnType<typeof getTestDatabase>>;
   let repos: ReturnType<typeof repositories>;

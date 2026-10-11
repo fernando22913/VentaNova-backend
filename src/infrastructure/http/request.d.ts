@@ -1,9 +1,6 @@
 import type { UserRole } from '../../domain/model/enums.js';
 
-/**
- * Express Request augmentation: `req.auth` is set by `requireAuth` for
- * protected routes. `requireAdmin` (Phase 6) additionally checks the role.
- */
+// Aumento de Express Request: `requireAuth` asigna `req.auth` en rutas protegidas.
 declare global {
   namespace Express {
     interface Request {
@@ -12,5 +9,5 @@ declare global {
   }
 }
 
-// Required so the `declare global` block is treated as a module augmentation.
+// Necesario para que `declare global` se trate como aumento de módulo.
 export {};

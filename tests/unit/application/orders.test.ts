@@ -72,7 +72,7 @@ describe('CreateOrder', () => {
     });
 
     expect(order.status).toBe('PENDING');
-    expect(order.totalCents).toBe(4498); // 1999×2 + 500 — never from the client
+    expect(order.totalCents).toBe(4498); // 1999×2 + 500, nunca del cliente
     expect(order.items).toEqual([
       expect.objectContaining({ titleSnapshot: 'Neo Racer', unitPriceCents: 1999, quantity: 2 }),
       expect.objectContaining({ titleSnapshot: 'Neo Racer', unitPriceCents: 500, quantity: 1 }),
@@ -245,7 +245,7 @@ describe('PayOrder', () => {
     const order = await pendingOrder(ctx);
     const racingGateway = {
       async charge() {
-        // Another request pays the order between our read and our write.
+        // Otra petición paga el pedido entre nuestra lectura y nuestra escritura.
         await ctx.orders.transitionStatus(order.id, 'PENDING', 'PAID', new Date());
         return { approved: true as const, transactionId: 'tx-race' };
       },

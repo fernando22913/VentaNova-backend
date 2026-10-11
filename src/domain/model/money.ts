@@ -1,14 +1,6 @@
 import { ValidationError } from '../errors/index.js';
 
-/**
- * Money value object — positive integer cents, nothing else.
- *
- * Domain invariant #5: floats never touch money. `Money` is the only currency
- * shape the core understands; every amount that matters (product price, order
- * total, snapshot unit price) lives behind it so arithmetic cannot silently
- * introduce rounding or sign errors. The total is always recomputed server
- * side from database prices; this object is how that recomputation happens.
- */
+// Objeto de valor Money: solo céntimos enteros positivos; los floats nunca tocan el dinero.
 export class Money {
   private constructor(private readonly cents: number) {}
 
@@ -23,12 +15,12 @@ export class Money {
     return new Money(0);
   }
 
-  /** Immutable addition of two moneys. */
+  // Suma inmutable de dos Money.
   add(other: Money): Money {
     return Money.fromCents(this.cents + other.cents);
   }
 
-  /** Quantity must be a positive integer; the result is still integer cents. */
+  // La cantidad debe ser un entero positivo; el resultado sigue siendo céntimos enteros.
   multiplyBy(quantity: number): Money {
     if (!Number.isSafeInteger(quantity) || quantity <= 0) {
       throw new ValidationError('Quantity must be a positive safe integer');

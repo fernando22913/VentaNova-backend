@@ -90,10 +90,10 @@ describe('Auth API (contract)', () => {
     expect(body.token_type).toBe('bearer');
     expect(body.expires_in).toBe(3600);
     expect(body.access_token.split('.')).toHaveLength(3);
-    // Opaque refresh token — not a JWT.
+    // Refresh token opaco, no un JWT.
     expect(body.refresh_token).not.toContain('.');
     expect(body.refresh_token).not.toBe(body.access_token);
-    // No internal hash is ever exposed.
+    // No se expone ningún hash interno.
     expect(response.body).not.toHaveProperty('refresh_token_hash');
     expect(response.body).not.toHaveProperty('token_hash');
   });
@@ -222,18 +222,17 @@ describe('Auth API (contract)', () => {
       const rotated = await refresh({ refresh_token: body.refresh_token });
       expect(rotated.status).toBe(200);
       const next = as<AuthBody>(rotated.body);
-      // Access tokens are deterministic within the same second (same claims);
-      // the opaque refresh token is always new.
+      // Los access tokens son deterministas en el mismo segundo; el refresh token siempre es nuevo.
       expect(next.refresh_token).not.toBe(body.refresh_token);
       expect(next.user.role).toBe('CUSTOMER');
 
-      // New access token works.
+      // El nuevo access token funciona.
       const me = await request(app)
         .get('/api/v1/auth/me')
         .set('Authorization', `Bearer ${next.access_token}`);
       expect(me.status).toBe(200);
 
-      // Old refresh token is no longer valid.
+      // El refresh token antiguo ya no es válido.
       const replay = await refresh({ refresh_token: body.refresh_token });
       expect(replay.status).toBe(401);
     });
@@ -246,7 +245,7 @@ describe('Auth API (contract)', () => {
       const reuse = await refresh({ refresh_token: body.refresh_token });
       expect(reuse.status).toBe(401);
 
-      // The descendant token is revoked too, so theft cannot continue.
+      // El token descendiente también se revoca, así el robo no puede continuar.
       const revoked = await refresh({ refresh_token: next.refresh_token });
       expect(revoked.status).toBe(401);
     });
@@ -299,7 +298,7 @@ describe('Auth API (contract)', () => {
       const afterLogout = await refresh({ refresh_token: body.refresh_token });
       expect(afterLogout.status).toBe(401);
 
-      // The account still exists: a fresh login still works.
+      // La cuenta sigue existiendo, así que un login nuevo funciona.
       const relogin = await login({ email: 'logout@test.dev', password: 'password123' });
       expect(relogin.status).toBe(200);
     });

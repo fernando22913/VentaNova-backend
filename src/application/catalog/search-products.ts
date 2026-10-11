@@ -19,12 +19,7 @@ export interface SearchProductsDeps {
   categories: CategoryRepository;
 }
 
-/**
- * Public catalog search. The status filter is *always* PUBLISHED regardless of
- * caller input (drafts/archived are admin territory). The public `category`
- * param is a slug, mapped to the internal id; an unknown slug yields an empty
- * page rather than an error.
- */
+// Búsqueda pública del catálogo; el estado siempre es PUBLISHED y la categoría es un slug (desconocida -> página vacía).
 export class SearchProducts {
   constructor(private readonly deps: SearchProductsDeps) {}
 

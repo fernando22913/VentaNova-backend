@@ -9,20 +9,12 @@ const DAYS = 30;
 const BEST_SELLER_LIMIT = 5;
 
 function asInt(value: unknown): number {
-  // Aggregate values arrive as bigint/numeric strings from postgres.js; the
-  // driver returns them unparsed, so coerce defensively here.
+  // Los agregados llegan como cadenas bigint/numeric desde postgres.js, así que se convierten defensivamente aquí.
   const parsed = typeof value === 'number' ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-/**
- * Drizzle adapter for the TrendsRepository port.
- *
- * A read-only projection restricted to `status = 'PAID'` orders. Only the
- * aggregate columns needed by the DTO are selected (no joins that would leak a
- * buyer or an order). Revenue and unit sums are computed in separate queries so
- * joining `orders` to multi-line `order_items` never inflates an order's total.
- */
+// Adaptador Drizzle para el puerto TrendsRepository: proyección de solo lectura sobre órdenes PAID con sumas separadas de ingresos/unidades.
 export class DrizzleTrendsRepository implements TrendsRepository {
   constructor(private readonly db: Database) {}
 
@@ -114,8 +106,7 @@ export class DrizzleTrendsRepository implements TrendsRepository {
   }
 }
 
-/** Merge the two per-day maps into a contiguous, oldest-first 30-day series
- * (empty days included so the chart axis never has holes). Dates are UTC. */
+// Fusiona los dos mapas por día en una serie contigua de 30 días de más antiguo a más nuevo, incluyendo días vacíos (fechas UTC).
 function buildDailySeries(revenue: Map<string, number>, units: Map<string, number>): TrendPoint[] {
   const points: TrendPoint[] = [];
   const today = new Date();

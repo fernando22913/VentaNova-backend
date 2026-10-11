@@ -5,7 +5,7 @@ export interface ListContactsDeps {
   contacts: ContactRepository;
 }
 
-/** Staff inbox: every contact submission, newest first. */
+// Bandeja del personal: todos los mensajes de contacto, más recientes primero.
 export class ListContacts {
   constructor(private readonly deps: ListContactsDeps) {}
 

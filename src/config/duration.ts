@@ -1,10 +1,6 @@
 const UNIT_SECONDS = { s: 1, m: 60, h: 3600, d: 86_400 } as const;
 
-/**
- * Parse a compact duration such as `1h` or `7d` into seconds. Dependency-free
- * on purpose — the only durations we configure are token lifetimes, so pulling
- * in `ms` (or any date library) would be unnecessary weight.
- */
+// Convierte una duración compacta como "1h" o "7d" a segundos (sin dependencias a propósito).
 export function parseDurationToSeconds(value: string): number {
   const match = /^(\d+)([smhd])$/.exec(value.trim());
   if (!match) {

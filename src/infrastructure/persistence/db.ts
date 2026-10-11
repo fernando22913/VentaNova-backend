@@ -11,12 +11,7 @@ export interface DbHandle {
   client: postgres.Sql;
 }
 
-/**
- * One postgres.js connection per database URL. `prepare: false` is required
- * for the postgres-js migrator and keeps parameterized queries on a single
- * statement cache; the driver still parameterizes every query, so SQL
- * injection stays off the table (NFR1).
- */
+// Una conexión postgres.js por URL de base de datos; `prepare: false` es necesario para el migrador.
 export function createDb(databaseUrl: string): DbHandle {
   const client = postgres(databaseUrl, { max: 10, prepare: false });
   const db = drizzle(client, { schema });

@@ -125,7 +125,7 @@ describe('Trends API (contract)', () => {
     const product = await seedPublishedProduct(1000, 'failed-game');
     const auth = await register('trend2');
 
-    // Approved order → included.
+    // El pedido aprobado se incluye.
     const good = await request(app)
       .post('/api/v1/orders')
       .set('Authorization', `Bearer ${auth.access_token}`)
@@ -135,7 +135,7 @@ describe('Trends API (contract)', () => {
       .set('Authorization', `Bearer ${auth.access_token}`)
       .send(cardBody());
 
-    // Pending order → excluded.
+    // El pedido pendiente se excluye.
     await request(app)
       .post('/api/v1/orders')
       .set('Authorization', `Bearer ${auth.access_token}`)

@@ -6,7 +6,7 @@ export interface ListProductsForAdminDeps {
   products: ProductRepository;
 }
 
-/** Admin catalog listing: unlike the public search it may return every status. */
+// Listado del catálogo admin: a diferencia de la búsqueda pública puede devolver cualquier estado.
 export class ListProductsForAdmin {
   constructor(private readonly deps: ListProductsForAdminDeps) {}
 

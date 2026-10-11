@@ -4,7 +4,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  /** argon2id hash — never leave the core in responses/DTOs. */
+  // hash argon2id — nunca sale del núcleo hacia respuestas/DTOs.
   passwordHash: string;
   role: UserRole;
   createdAt: Date;

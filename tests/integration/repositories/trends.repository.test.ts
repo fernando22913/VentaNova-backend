@@ -7,7 +7,7 @@ function utcTodayKey(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-/** Midday UTC today — safe from any DB session day-boundary offset. */
+// Mediodía UTC de hoy, a salvo de desfases de límite de día de la sesión de la DB.
 function middayUtcToday(): Date {
   return new Date(`${utcTodayKey()}T12:00:00.000Z`);
 }
@@ -108,7 +108,7 @@ describe('TrendsRepository (Drizzle)', () => {
       ),
     );
 
-    // Give product[0] more units than the rest so the ranking is deterministic.
+    // Da a product[0] más unidades que al resto para que el ranking sea determinista.
     const paid = await repos.orders.create({
       userId: user.id,
       totalCents: 300,

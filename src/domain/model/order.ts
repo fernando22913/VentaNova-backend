@@ -1,13 +1,6 @@
 import type { OrderStatus } from './enums.js';
 
-/**
- * A sales order. Owned by a user, made of snapshot order items.
- *
- * `totalCents` is the server-recomputed sum of unit price × quantity taken
- * from database prices at creation time — never from the client payload.
- * `items` are embedded in the order so the domain works with the whole
- * aggregate and the repository materializes them with one join.
- */
+// Pedido de venta de un usuario; totalCents se calcula en el servidor desde los precios de la BD y los items son instantáneas embebidas.
 export interface Order {
   id: string;
   userId: string;
@@ -18,8 +11,7 @@ export interface Order {
   items: OrderItem[];
 }
 
-/** An order line. Title and price are snapshotted at purchase time
- * (domain invariant #2): later price or title edits never mutate history. */
+// Línea de pedido; title y price se capturan al comprar (invariante #2), así ediciones posteriores nunca mutan el historial.
 export interface OrderItem {
   id: string;
   orderId: string;

@@ -10,11 +10,7 @@ interface BoundaryError {
   statusCode?: unknown;
 }
 
-/**
- * Translate body-parser's own 4xx failures (malformed JSON, oversized body,
- * unsupported charset) into the standard envelope. Without this they would all
- * fall through to the generic 500 branch.
- */
+// Traduce los fallos 4xx de body-parser (JSON malformado, cuerpo grande, charset) al envoltorio.
 function boundaryHttpError(error: unknown): { status: number; code: string; message: string } | null {
   if (typeof error !== 'object' || error === null) return null;
   const { type, status, statusCode } = error as BoundaryError;
@@ -36,11 +32,7 @@ function boundaryHttpError(error: unknown): { status: number; code: string; mess
   return null;
 }
 
-/**
- * Pull a PostgreSQL SQLSTATE out of an error, following Drizzle's `cause`
- * chain, so database-enforced invariants surface as the right HTTP status
- * instead of a generic 500.
- */
+// Extrae el SQLSTATE de PostgreSQL de un error (siguiendo la cadena `cause` de Drizzle) para mapear invariantes de la BD.
 function postgresErrorCode(error: unknown): string | undefined {
   let current: unknown = error;
   for (let depth = 0; depth < 3 && current; depth += 1) {
@@ -60,12 +52,7 @@ const PG_CONSTRAINT_ERRORS: Record<string, { status: number; code: string; messa
   '22P02': { status: 400, code: 'BAD_REQUEST', message: 'Malformed identifier' },
 };
 
-/**
- * Maps DomainErrors (and boundary validation errors) to the standard error
- * envelope `{ error: { code, message, details? } }` (blueprint §7). Controllers
- * never format errors — they throw typed errors and this middleware owns the
- * HTTP representation. Unknown errors return 500 without leaking internals.
- */
+// Mapea DomainErrors y errores de validación al envoltorio `{ error: { code, message, details? } }` (blueprint §7).
 export function errorHandler(
   error: unknown,
   req: Request,

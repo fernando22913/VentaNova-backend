@@ -23,17 +23,7 @@ export interface RefreshSessionDeps {
   unitOfWork: UnitOfWork;
 }
 
-/**
- * Rotate a refresh session.
- *
- * The supplied token is hashed and looked up; it must exist, be unexpired and
- * unrevoked. Rotation revokes the presented token and mints a new token in the
- * same family, inside one transaction, so a crash can never leave the session
- * both revoked and un-replaced (or double-issued).
- *
- * Reuse of an already-revoked token is treated as theft: the whole family is
- * revoked, so a stolen-and-rotated token cannot be replayed.
- */
+// Rota una sesión refresh en una transacción; reusar un token revocado revoca toda la familia.
 export class RefreshSession {
   constructor(private readonly deps: RefreshSessionDeps) {}
 
@@ -43,7 +33,7 @@ export class RefreshSession {
       this.deps.generator.hash(input.refreshToken),
     );
 
-    // Missing, revoked or expired all collapse to the same 401 (no oracle).
+    // Ausente, revocado o expirado colapsan al mismo 401 (sin oracle).
     if (!record) {
       throw new UnauthorizedError('Invalid refresh token');
     }
@@ -61,7 +51,7 @@ export class RefreshSession {
     }
 
     const outcome = await this.deps.unitOfWork.run(async (tx) => {
-      // Compare-and-set: only one concurrent rotation can revoke this token.
+      // Compare-and-set: solo una rotación concurrente puede revocar este token.
       const revoked = await tx.refreshTokens.revoke(record.id, now);
       if (!revoked) return { rotated: false as const };
 
@@ -73,7 +63,7 @@ export class RefreshSession {
     });
 
     if (!outcome.rotated) {
-      // Lost the race with a concurrent rotation → treat as reuse.
+      // Perdió la carrera con una rotación concurrente → se trata como reuso.
       await this.deps.refreshTokens.revokeFamily(record.familyId, now);
       throw new UnauthorizedError('Invalid refresh token');
     }

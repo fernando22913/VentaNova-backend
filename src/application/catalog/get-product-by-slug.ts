@@ -6,11 +6,7 @@ export interface GetProductBySlugDeps {
   products: ProductRepository;
 }
 
-/**
- * Public product detail by slug. Only PUBLISHED products are public; a known
- *-but-unpublished slug (draft or archived) behaves like an unknown one (404)
- * rather than leaking internal catalog state.
- */
+// Detalle público de producto por slug; solo los productos PUBLISHED son visibles (si no 404).
 export class GetProductBySlug {
   constructor(private readonly deps: GetProductBySlugDeps) {}
 

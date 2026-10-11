@@ -1,46 +1,39 @@
-/**
- * Aggregated, public sales statistics derived exclusively from paid orders.
- *
- * Deliberately coarse: totals, a per-day series and a best-seller list. No
- * order-level or customer-level detail is ever exposed — the repository joins
- * only against `orders` (status `PAID`) and `order_items` and projects nothing
- * that identifies a buyer.
- */
+// Estadísticas públicas de ventas agregadas solo de pedidos pagados; no se expone detalle de pedidos ni clientes.
 
-/** Gross revenue and order/unit volumes across all paid orders. */
+// Ingresos brutos y volúmenes de pedidos/unidades de todos los pedidos pagados.
 export interface TrendTotals {
-  /** Sum of `orders.total_cents` for paid orders (integer cents). */
+  // Suma de `orders.total_cents` de los pedidos pagados (céntimos enteros).
   revenueCents: number;
-  /** Number of paid orders. */
+  // Número de pedidos pagados.
   paidOrders: number;
-  /** Total quantity of items sold across paid orders. */
+  // Cantidad total de items vendidos en los pedidos pagados.
   unitsSold: number;
-  /** revenueCents / paidOrders (0 when there are no paid orders). */
+  // revenueCents / paidOrders (0 cuando no hay pedidos pagados).
   averageOrderCents: number;
 }
 
-/** One per-day bucket of the last-N-days series. */
+// Un bucket por día de la serie de los últimos N días.
 export interface TrendPoint {
-  /** ISO date (yyyy-mm-dd) of the bucket, in UTC. */
+  // Fecha ISO (yyyy-mm-dd) del bucket, en UTC.
   date: string;
   revenueCents: number;
   units: number;
 }
 
-/** A best-selling product, ranked by quantity sold. */
+// Un producto más vendido, ordenado por cantidad vendida.
 export interface BestSeller {
-  /** Product slug for deep linking to the catalog. */
+  // slug del producto para enlazar al catálogo.
   slug: string;
   title: string;
   unitsSold: number;
   revenueCents: number;
 }
 
-/** Everything the public Trends endpoint returns. */
+// Todo lo que devuelve el endpoint público de Trends.
 export interface TrendReport {
   totals: TrendTotals;
-  /** Past 30 days including empty days, oldest first. */
+  // Últimos 30 días incluyendo días vacíos, del más antiguo al más reciente.
   sales: TrendPoint[];
-  /** Top 5 products by units sold. */
+  // Top 5 productos por unidades vendidas.
   bestSellers: BestSeller[];
 }

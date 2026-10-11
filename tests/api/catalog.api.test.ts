@@ -171,7 +171,7 @@ describe('Catalog API (contract)', () => {
     expect(detail.slug).toBe('neo-racer');
     expect(detail.description).toBe('A longer test description.');
     expect(detail.priceCents).toBe(3999);
-    // The download URL is entitlement-scoped and must never be public.
+    // La URL de descarga depende del entitlement, nunca es pública.
     expect(detail).not.toHaveProperty('assetUrl');
   });
 

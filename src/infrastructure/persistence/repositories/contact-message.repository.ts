@@ -9,7 +9,7 @@ import type { ContactRepository } from '../../../domain/ports/contact-repository
 import type { Database } from '../db.js';
 import { contactMessages } from '../schema.js';
 
-/** Drizzle adapter for the ContactRepository port. */
+// Adaptador Drizzle para el puerto ContactRepository.
 export class DrizzleContactRepository implements ContactRepository {
   constructor(private readonly db: Database) {}
 

@@ -7,11 +7,7 @@ import type { ContactMessage } from '../../domain/model/contact-message.js';
 import type { TrendReport } from '../../domain/model/trends.js';
 import type { TokenPair } from '../../application/auth/issue-token-pair.js';
 
-/**
- * Response DTOs. These are the only shapes the API ever exposes — the domain
- * entities are deliberately never serialized directly (no `passwordHash`,
- * for example). The frontend mirrors these in `core/models`.
- */
+// DTOs de respuesta: únicos formatos que expone la API; las entidades de dominio nunca se serializan directamente.
 
 export interface PublicUser {
   id: string;
@@ -35,17 +31,12 @@ export interface PublicProduct {
   updatedAt: Date;
 }
 
-/**
- * Public product detail. Deliberately does NOT include `assetUrl`: the
- * downloadable asset is a paid entitlement and is only ever revealed through
- * the authenticated `/library` endpoint. `PublicProductDetail` (with the asset
- * URL) is reserved for that entitlement-scoped shape.
- */
+// Detalle público de producto: omite a propósito `assetUrl`, expuesto solo vía `/library`.
 export interface PublicProductView extends PublicProduct {
   description: string;
 }
 
-/** Entitlement-scoped product shape: adds the gated download URL. */
+// Forma de producto con entitlement: añade la URL de descarga protegida.
 export interface PublicProductDetail extends PublicProductView {
   assetUrl: string;
 }
@@ -57,8 +48,7 @@ export interface PublicCategory {
 }
 
 export function toUserDto(user: User): PublicUser {
-  // Explicitly select fields — an object spread would be a future leak vector
-  // if a new sensitive field were added to the entity.
+  // Selecciona campos explícitamente: un spread podría filtrar nuevos campos sensibles de la entidad.
   return {
     id: user.id,
     email: user.email,
@@ -68,12 +58,7 @@ export function toUserDto(user: User): PublicUser {
   };
 }
 
-/**
- * Authentication response envelope for register/login/refresh. Carries the
- * access token, the raw refresh token (the client stores it; the server only
- * keeps its hash) and the access-token lifetime. The refresh-token hash is
- * never included.
- */
+// Envoltorio de respuesta de auth para register/login/refresh: access + refresh token sin cifrar y su duración; nunca el hash.
 export interface AuthResponse {
   user: PublicUser;
   access_token: string;
@@ -108,7 +93,7 @@ export function toPublicProduct(product: Product): PublicProduct {
   };
 }
 
-/** Public detail mapper — never leaks the gated `assetUrl`. */
+// Mapper de detalle público: nunca filtra el `assetUrl` protegido.
 export function toPublicProductView(product: Product): PublicProductView {
   return {
     ...toPublicProduct(product),
@@ -116,7 +101,7 @@ export function toPublicProductView(product: Product): PublicProductView {
   };
 }
 
-/** Entitlement-scoped mapper — used only by the authenticated library. */
+// Mapper con entitlement: usado solo por la biblioteca autenticada.
 export function toPublicProductDetail(product: Product): PublicProductDetail {
   return {
     ...toPublicProductView(product),
@@ -124,7 +109,7 @@ export function toPublicProductDetail(product: Product): PublicProductDetail {
   };
 }
 
-/** Admin product shape — the public detail plus the lifecycle status. */
+// Forma de producto admin: el detalle público más el estado del ciclo de vida.
 export interface AdminProductDetail extends PublicProductDetail {
   status: Product['status'];
 }
@@ -210,10 +195,7 @@ export function toLibraryItemDto(entitlement: Entitlement, product: Product): Pu
   };
 }
 
-/**
- * Contact submission response. Confirms the message was *stored* — there is no
- * email transport, so nothing here should ever read as "email sent".
- */
+// Respuesta de envío de contacto: confirma que el mensaje se guardó; no existe transporte de email.
 export interface PublicContactMessage {
   id: string;
   name: string;
@@ -232,11 +214,7 @@ export function toContactMessageDto(message: ContactMessage): PublicContactMessa
   };
 }
 
-/**
- * Staff inbox shape — the full message plus the operator reply fields. Only
- * ever returned behind ADMIN/WORKER auth; the public POST response stays the
- * minimal `PublicContactMessage`.
- */
+// Forma de bandeja del personal: mensaje completo más campos de respuesta del operador, solo tras auth ADMIN/WORKER.
 export interface AdminContactMessage {
   id: string;
   name: string;
@@ -265,7 +243,7 @@ export function toAdminContactMessageDto(message: ContactMessage): AdminContactM
   };
 }
 
-/** Trends response — a shallow copy of the aggregated report. */
+// Respuesta de tendencias: copia superficial del informe agregado.
 export function toTrendReportDto(report: TrendReport): TrendReport {
   return {
     totals: { ...report.totals },

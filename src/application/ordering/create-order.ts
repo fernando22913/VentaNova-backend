@@ -22,20 +22,10 @@ export interface CreateOrderDeps {
   entitlements: EntitlementRepository;
 }
 
-/**
- * Upper bound for `total_cents`, which is stored in a 32-bit `integer` column.
- * A malicious/huge basket must fail as a clean 422 rather than as a database
- * overflow error surfacing as a 500.
- */
+// Límite superior de total_cents (columna de 32 bits); carritos enormes dan 422, no 500.
 const MAX_ORDER_TOTAL_CENTS = 2_147_483_647;
 
-/**
- * Places a PENDING order. The client only sends product ids + quantities —
- * the total is recomputed here from database prices (invariant #1), titles
- * and prices are snapshotted (invariant #2), and double-purchase is rejected
- * (invariant #4). Quantity is validated by the boundary schema; duplicates in
- * the same request are rejected here.
- */
+// Crea un pedido PENDING: recalcula el total con precios de la BD, guarda precio/título y rechaza la compra duplicada.
 export class CreateOrder {
   constructor(private readonly deps: CreateOrderDeps) {}
 

@@ -7,11 +7,7 @@ import { requireAuth } from '../middleware/require-auth.js';
 import { requireRole } from '../middleware/require-role.js';
 import { toAdminContactMessageDto } from '../dto.js';
 
-/**
- * Operator inbox for contact submissions. Only ADMIN/WORKER can read the
- * messages or record a reply — the public side (`POST /contact`) stays open.
- * There is no email transport, so a reply is persisted next to the message.
- */
+// Bandeja del operador para contactos: solo ADMIN/WORKER pueden leer o responder; las respuestas persisten.
 export const replyContactSchema = z.object({
   reply: z
     .string({ message: 'Se requiere una respuesta' })

@@ -4,11 +4,7 @@ import { env } from '../../config/env.js';
 import { logger } from '../logging/logger.js';
 import { createDb } from './db.js';
 
-/**
- * Runs the committed SQL migrations against the configured database. Used by
- * the `db:migrate` script locally and, via the deploy release command, on
- * Render before boot — never `db:push` (blueprint §5/§12).
- */
+// Ejecuta las migraciones SQL confirmadas contra la base de datos configurada (nunca db:push).
 export async function runMigrations(databaseUrl = env.DATABASE_URL): Promise<void> {
   const { db, client } = createDb(databaseUrl);
   await migrate(db, { migrationsFolder: './drizzle' });

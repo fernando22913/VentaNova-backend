@@ -124,7 +124,7 @@ describe('Admin API (contract)', () => {
     const product = as<ProductBody>(created.body);
     expect(product).toMatchObject({ slug: 'admin-game', status: 'DRAFT', priceCents: 4550 });
 
-    // Not visible publicly while DRAFT
+    // Oculto al público mientras está DRAFT
     const publicDetail = await request(app).get('/api/v1/products/admin-game');
     expect(publicDetail.status).toBe(404);
 
@@ -261,7 +261,7 @@ describe('Admin API (contract)', () => {
       role: 'WORKER',
     });
 
-    // The freshly provisioned worker can log in.
+    // El nuevo worker puede iniciar sesión.
     const login = await request(app)
       .post('/api/v1/auth/login')
       .send({ email: 'new-worker@test.dev', password: 'password123' });

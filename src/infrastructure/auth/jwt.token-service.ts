@@ -4,18 +4,13 @@ import type { TokenClaims, TokenPayload, TokenService } from '../../domain/ports
 import { UnauthorizedError } from '../../domain/errors/index.js';
 import { isUserRole } from '../../domain/model/enums.js';
 
-/**
- * JWT HS256 access-token service (blueprint §10): stateless bearer tokens with
- * `sub`, `role`, `iat`/`exp`. Access tokens are deliberately short-lived (1h by
- * default, configured via ACCESS_TOKEN_EXPIRES_IN) and are paired with a
- * separate rotating refresh token — the access token is never used to refresh.
- */
+// Servicio de access token JWT HS256 (blueprint §10): tokens bearer sin estado de corta vida, junto a un refresh token rotatorio.
 export class JwtTokenService implements TokenService {
   private readonly signOptions: SignOptions;
 
   constructor(
     private readonly secret: string,
-    expiresInSeconds: number = 60 * 60, // 1 hour
+    expiresInSeconds: number = 60 * 60, // 1 hora
   ) {
     this.signOptions = { algorithm: 'HS256', expiresIn: expiresInSeconds, issuer: 'ventanova' };
   }
@@ -31,8 +26,7 @@ export class JwtTokenService implements TokenService {
     try {
       payload = jwt.verify(token, this.secret, {
         issuer: 'ventanova',
-        // Pin the accepted algorithm so a token can never be verified under a
-        // different scheme than the one we sign with.
+        // Fija el algoritmo aceptado para que un token nunca se verifique con otro esquema.
         algorithms: ['HS256'],
       }) as JwtPayload & {
         role?: unknown;

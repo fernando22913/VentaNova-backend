@@ -5,11 +5,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import * as schema from '../../../src/infrastructure/persistence/schema.js';
 import type { Database } from '../../../src/infrastructure/persistence/db.js';
 
-/**
- * Shared helper for integration tests. Ensures the dedicated `ventanova_test`
- * database exists, applies the committed migrations once per run, and hands
- * out a clean (truncated) database per test.
- */
+// Helper compartido de integración: asegura ventanova_test, migra una vez y devuelve una DB limpia.
 
 export const TEST_DATABASE_URL =
   process.env.TEST_DATABASE_URL ??
@@ -33,7 +29,7 @@ export async function getTestDatabase(): Promise<{ db: Database; client: postgre
   return handle;
 }
 
-/** Empties every table; the app-layer order intentionally mirrors FK deps. */
+// Vacía todas las tablas; el orden respeta las dependencias FK.
 export async function resetDatabase(client: postgres.Sql): Promise<void> {
   await client.unsafe(
     'TRUNCATE TABLE refresh_tokens, entitlements, order_items, orders, products, categories, users, contact_messages RESTART IDENTITY CASCADE',
@@ -41,8 +37,7 @@ export async function resetDatabase(client: postgres.Sql): Promise<void> {
 }
 
 async function ensureDatabaseExists(): Promise<void> {
-  // CREATE DATABASE cannot be parameterized; the name is derived from a
-  // controlled test URL, so a safe identifier is guaranteed.
+  // CREATE DATABASE no se puede parametrizar; la URL de test controlada garantiza un nombre seguro.
   if (!/^[a-z_][a-z0-9_]*$/.test(testDatabaseName)) {
     throw new Error(`Unsafe test database name: "${testDatabaseName}"`);
   }

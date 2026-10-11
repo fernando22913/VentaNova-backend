@@ -13,9 +13,7 @@ export interface ListLibraryDeps {
   products: ProductRepository;
 }
 
-/** The user's owned products: entitlement + current product (for download URL).
- * Products that were archived or removed still appear via the entitlement —
- * orders keep working from snapshots; the download lives on the product. */
+// Productos del usuario: entitlement + producto actual (para la URL de descarga).
 export class ListLibrary {
   constructor(private readonly deps: ListLibraryDeps) {}
 

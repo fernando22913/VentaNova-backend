@@ -1,13 +1,6 @@
 import type { ProductType, ProductPlatform, ProductStatus } from './enums.js';
 
-/**
- * A catalog product. Purely a data shape: the rules that decide whether a
- * product may be bought live in the application layer, so the persistence
- * adapter has a single, honest mapping target.
- *
- * `priceCents` is integer cents (domain invariant #5). `coverImageUrl` is
- * nullable because an admin may publish a product before uploading a cover.
- */
+// Forma de datos de un producto del catálogo; priceCents son céntimos enteros (invariante #5) y coverImageUrl es nullable.
 export interface Product {
   id: string;
   slug: string;
@@ -25,7 +18,7 @@ export interface Product {
   updatedAt: Date;
 }
 
-/** Input for a fresh product; the repository assigns id and timestamps. */
+// Entrada para un producto nuevo; el repositorio asigna id y timestamps.
 export interface ProductCreateInput {
   slug: string;
   title: string;
@@ -40,9 +33,7 @@ export interface ProductCreateInput {
   status: ProductStatus;
 }
 
-/** Fields an admin may edit. `status` is managed via its own transition.
- * Explicit `| undefined` keeps parsed optional DTO fields assignable under
- * `exactOptionalPropertyTypes`. */
+// Campos que un admin puede editar; el `| undefined` explícito permite asignar campos DTO opcionales con exactOptionalPropertyTypes.
 export interface ProductUpdateInput {
   slug?: string | undefined;
   title?: string | undefined;

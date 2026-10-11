@@ -5,7 +5,7 @@ export interface ListAllOrdersDeps {
   orders: OrderRepository;
 }
 
-/** Admin: every order across all users, newest first. */
+// Admin: todos los pedidos de todos los usuarios, más recientes primero.
 export class ListAllOrders {
   constructor(private readonly deps: ListAllOrdersDeps) {}
 

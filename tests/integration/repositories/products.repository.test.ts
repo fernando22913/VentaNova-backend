@@ -232,7 +232,7 @@ describe('ProductRepository (Drizzle)', () => {
 
     const archived = await repos.products.updateStatus(product.id, 'ARCHIVED');
     expect(archived?.status).toBe('ARCHIVED');
-    // Soft delete: the row is still addressable by slug, but never listed.
+    // Soft delete: la fila sigue accesible por slug pero nunca se lista.
     expect((await repos.products.findBySlug('soft-delete'))?.status).toBe('ARCHIVED');
     const catalog = await repos.products.search({
       status: 'PUBLISHED',

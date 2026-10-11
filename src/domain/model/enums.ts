@@ -1,10 +1,4 @@
-/**
- * Enumerations used across the domain.
- *
- * Each enum is a closed union type plus a readonly array of its values. The
- * arrays feed both runtime validation (zod) and the PostgreSQL `ENUM` types,
- * so the DB check constraints and the TypeScript types can never drift apart.
- */
+// Enumeraciones de dominio: tipos unión cerrados y arrays readonly que alimentan zod y los ENUM de PostgreSQL.
 
 export const PRODUCT_TYPES = ['GAME', 'SOFTWARE', 'DLC', 'ASSET'] as const;
 export type ProductType = (typeof PRODUCT_TYPES)[number];
@@ -21,7 +15,7 @@ export type UserRole = (typeof USER_ROLES)[number];
 export const ORDER_STATUSES = ['PENDING', 'PAID', 'FAILED', 'CANCELLED'] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-/** Lifecycle of a contact submission from the operator's inbox perspective. */
+// Ciclo de vida de un contacto desde la perspectiva de la bandeja del operador.
 export const CONTACT_STATUSES = ['OPEN', 'RESOLVED'] as const;
 export type ContactStatus = (typeof CONTACT_STATUSES)[number];
 

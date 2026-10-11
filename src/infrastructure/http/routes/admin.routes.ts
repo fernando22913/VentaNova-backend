@@ -70,10 +70,10 @@ export function createAdminRouter(container: AppContainer): Router {
   const router = Router();
   router.use(requireAuth(container.tokenService));
 
-  // Catalog management is shared by ADMIN and WORKER staff.
+  // La gestión del catálogo la comparten el personal ADMIN y WORKER.
   const staff = requireRole('ADMIN', 'WORKER');
 
-  // --- Products -------------------------------------------------------------
+  // --- Productos ------------------------------------------------------------
   router.get('/products', staff, async (req, res) => {
     const query = parseOrThrow(listQuerySchema, req.query);
     const result = await container.useCases.listProductsForAdmin.execute({
@@ -113,13 +113,13 @@ export function createAdminRouter(container: AppContainer): Router {
     res.json(toAdminProductDetail(product));
   });
 
-  // --- Orders ---------------------------------------------------------------
+  // --- Pedidos --------------------------------------------------------------
   router.get('/orders', staff, async (_req, res) => {
     const orders = await container.useCases.listAllOrders.execute();
     res.json({ items: orders.map(toAdminOrderDto) });
   });
 
-  // --- Users (admin only) ---------------------------------------------------
+  // --- Usuarios (solo admin) ------------------------------------------------
   router.get('/users', requireRole('ADMIN'), async (_req, res) => {
     const users = await container.useCases.listUsers.execute();
     res.json({ items: users.map(toUserDto) });

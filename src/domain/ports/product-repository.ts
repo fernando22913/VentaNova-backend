@@ -6,19 +6,14 @@ import type {
 } from '../model/index.js';
 import type { ProductPlatform } from '../model/index.js';
 
-/**
- * Search criteria passed to the repository. This is a criteria object, not a
- * query DSL: the core says *what* it wants, the adapter decides *how*. Keeps
- * Drizzle/SQL out of the use cases (blueprint ADR-14).
- */
+// Objeto de criterios de búsqueda (no un DSL de consulta); el adaptador decide cómo, manteniendo Drizzle/SQL fuera de los casos de uso (ADR-14).
 export interface ProductSearchCriteria {
   search?: string;
   categoryId?: string;
   platform?: ProductPlatform;
   minPriceCents?: number;
   maxPriceCents?: number;
-  /** Optional so the admin can list every status; the public catalog always
-   * pins it to PUBLISHED. */
+  // Opcional para que el admin liste cualquier estado; el catálogo público siempre lo fija a PUBLISHED.
   status?: ProductStatus;
   sort: ProductSort;
   page: number;
@@ -37,7 +32,7 @@ export interface PagedResult<T> {
 export interface ProductRepository {
   findById(id: string): Promise<Product | null>;
   findBySlug(slug: string): Promise<Product | null>;
-  /** Bulk read used to assemble the library (entitlements → products). */
+  // Lectura en lote para armar la biblioteca (entitlements → products).
   findByIds(ids: string[]): Promise<Product[]>;
   search(criteria: ProductSearchCriteria): Promise<PagedResult<Product>>;
   create(input: ProductCreateInput): Promise<Product>;

@@ -6,11 +6,7 @@ import type { OrderRepository } from '../../../domain/ports/order-repository.js'
 import type { Database } from '../db.js';
 import { orderItems, orders } from '../schema.js';
 
-/** Drizzle adapter for the OrderRepository port. Loads orders and their items
- * with two batched queries (items fetched via one `inArray`), avoiding N+1;
- * writes order + items atomically inside a transaction when used through the
- * UnitOfWork. Full-row selects are intentional: the domain mapper consumes
- * every column of `orders` and `order_items`. */
+// Adaptador Drizzle para el puerto OrderRepository; agrupa la carga de ítems para evitar N+1 y escribe de forma atómica vía UnitOfWork.
 export class DrizzleOrderRepository implements OrderRepository {
   constructor(private readonly db: Database) {}
 
@@ -39,7 +35,7 @@ export class DrizzleOrderRepository implements OrderRepository {
   }
 
   async create(input: OrderCreateInput): Promise<Order> {
-    // One transaction so a failed line insert can never leave an orphan order.
+    // Una sola transacción para que un fallo al insertar líneas nunca deje una orden huérfana.
     return this.db.transaction(async (tx) => {
       const [row] = await tx
         .insert(orders)
@@ -74,8 +70,7 @@ export class DrizzleOrderRepository implements OrderRepository {
   ): Promise<Order | null> {
     const setValues: Partial<typeof orders.$inferInsert> = { status: to };
     if (paidAt !== undefined) setValues.paidAt = paidAt;
-    // The `status = from` predicate makes this a compare-and-set: a row that
-    // another request already advanced is left untouched and yields null.
+    // `status = from` lo convierte en compare-and-set; una fila ya avanzada no se toca y devuelve null.
     const [row] = await this.db
       .update(orders)
       .set(setValues)

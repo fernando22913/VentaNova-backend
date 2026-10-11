@@ -5,7 +5,7 @@ import type { UserRepository } from '../../../domain/ports/user-repository.js';
 import type { Database } from '../db.js';
 import { users } from '../schema.js';
 
-/** Drizzle adapter for the UserRepository port. */
+// Adaptador Drizzle para el puerto UserRepository.
 export class DrizzleUserRepository implements UserRepository {
   constructor(private readonly db: Database) {}
 

@@ -5,7 +5,7 @@ import type { EntitlementRepository } from '../../../domain/ports/entitlement-re
 import type { Database } from '../db.js';
 import { entitlements } from '../schema.js';
 
-/** Drizzle adapter for the EntitlementRepository port. */
+// Adaptador Drizzle para el puerto EntitlementRepository.
 export class DrizzleEntitlementRepository implements EntitlementRepository {
   constructor(private readonly db: Database) {}
 

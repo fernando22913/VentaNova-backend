@@ -15,9 +15,7 @@ import type {
 import type { Database } from '../db.js';
 import { products } from '../schema.js';
 
-/** Drizzle adapter for the ProductRepository port, including the criteria
- * search endpoint. ILIKE is honest at catalog scale (blueprint §5); a pg_trgm
- * GIN index on `title` is the documented scale-up path. */
+// Adaptador Drizzle para el puerto ProductRepository, incluida la búsqueda por criterios (ILIKE a escala de catálogo).
 export class DrizzleProductRepository implements ProductRepository {
   constructor(private readonly db: Database) {}
 

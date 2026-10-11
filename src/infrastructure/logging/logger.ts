@@ -2,14 +2,7 @@ import { pino } from 'pino';
 
 import { env } from '../../config/env.js';
 
-/**
- * Application-wide structured logger.
- *
- * Production emits newline-delimited JSON (machine-readable for Render logs);
- * development uses `pino-pretty` for human-readable output. Tests are forced to
- * `silent` so suites stay deterministic and the reporter output is not drowned
- * out — the same reasoning that disables rate limiting under `NODE_ENV=test`.
- */
+// Logger estructurado global: JSON en producción, pino-pretty en desarrollo, silencio en tests.
 export const logger = pino({
   level: env.NODE_ENV === 'test' ? 'silent' : env.LOG_LEVEL,
   redact: {
