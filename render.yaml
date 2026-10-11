@@ -48,7 +48,7 @@ services:
           name: ventanova-db
           property: connectionString
       - key: CORS_ORIGIN
-        value: https://leafy-kulfi-07985d.netlify.app,https://ventanova.netlify.app
+        value: https://elaborate-medovik-9900a6.netlify.app
       - key: JWT_SECRET
         generateValue: true
       # Token lifetimes (compact durations: s/m/h/d). Values match the env.ts
